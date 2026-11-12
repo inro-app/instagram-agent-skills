@@ -31,7 +31,7 @@ Build and check it once, in your own agency account or in one client, then copy 
 **Replace what belongs to the source account.** These do not carry over and must be swapped for the target client's own:
 - **Media in a message step:** pass it inline as `media_file` with a `file_url` the user gives you, or reference a file already in the target account by `id`.
 - **Tracked links:** pass a `conversion_link` inline with the client's own URL, or reference one that exists in the target.
-- **Contact folders, properties, segments and surveys:** find or create the same one in the target, then use its id or slug. Over the connector, folders and surveys cannot be created inline inside a step, so they must exist first.
+- **Contact folders, properties, segments and surveys:** find or create the same one in the target, then use its id or slug. Folders and surveys can be created inline inside a step, but reuse the target's existing one with the same name so you don't make duplicates.
 - **Post-specific comment triggers:** a post belongs to one account. Pick the target client's own post with the user, or use a trigger option that is not tied to one post.
 - **Text that names the source client:** brand names, prices, links, language.
 
@@ -83,7 +83,7 @@ The menu inside the client's Instagram DM thread. It lives on Instagram. Keep it
 - Already 5 entries: **Conflict**.
 - Never touch the opt-out entry. It is kept in step with the opt-out setting, and deleting it turns opt-out off for that client.
 
-**Write.** `persistent_menu_manage` `add` with `title` and `type`: `postback` (sends its payload into Inrō, where an `icebreaker` trigger can match it) or `web_url` (opens a link, starts no automation; needs `url`). To change an entry, `persistent_menu_manage` `update` with `id` and the new `title` or `url`.
+**Write.** `persistent_menu_manage` `add` with `title` and `type`: `postback` (set `payload` to an existing ice breaker's payload, so that ice breaker's scenario answers it; a trigger on a menu-only payload shows an issue) or `web_url` (opens a link, starts no automation; needs `url`). To change an entry, `persistent_menu_manage` `update` with `id` and the new `title` or `url`.
 
 **Live.** Visible in the client's DMs as soon as it is written.
 

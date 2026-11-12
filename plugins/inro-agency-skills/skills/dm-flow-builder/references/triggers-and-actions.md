@@ -25,7 +25,7 @@ Several triggers on one scenario combine with OR: any one of them starts the flo
 | `recurring` | On a daily, weekly or monthly schedule, for every contact matching filters | `recurring_frequency`, `recurring_time` (HH:MM, account time zone), `recurring_day_of_week` (0 = Sunday), `recurring_day_of_month`, `recurring_only_new_contacts`, `contact_filters`, `filter_logic`. Pro |
 | `webhook` | An external system posts to the scenario's own URL | The request must name an existing contact. Pro |
 | `widget` | A website visitor uses the Inrō widget and sends its code | `widget_options`: `header_text`, `button_text`, `custom_style`. Pro |
-| `custom_event` | Listed, but has no working firing path today | Do not build on it. Use `webhook` |
+| `custom_event` | Listed by `get_trigger_types` | For events from outside Inrō, use `webhook` |
 
 Matching rules for keywords: whole words, case and accents ignored, a keyword of 4 or more letters also matches a plural or one extra letter. Emojis work as keywords.
 
@@ -47,7 +47,7 @@ Children of a branching action go under one of its branch labels (`parent_branch
 | `share_media` | Shares one of the account's own posts | none | `media_ig_id` (the post's `instagram_id`) |
 | `like` | Likes the contact's last DM | none | Not for comments |
 | `ask_for_follow` | Asks for a follow, checks it | `option_followed`, `option_expired` | `content`, `button_label`, `incorrect_label`. One per scenario |
-| `card_template` | Carousel of cards | per card button, `option_expired` | Shown to developer accounts only in the app; prefer `button_template` or `conversion_link` |
+| `card_template` | Carousel of cards | per card button, `option_expired` | Not offered in the app editor; prefer `button_template` or `conversion_link` |
 
 ### Conversions
 

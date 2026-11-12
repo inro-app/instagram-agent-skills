@@ -63,7 +63,7 @@ Follow the brand-voice file. Then:
 - **First line does the work.** Only the first line or two show before "more". Make it a reason to stop, in the client's voice. For hooks, `short-form-content-principles` has the thinking.
 - **Short paragraphs, plain words.** No filler openers, no hype the client can't back up, no em dashes.
 - **One call to action**, chosen for the post's goal: save, share, comment a keyword, book, visit the profile. If the post will carry a comment-to-DM automation, the call to action is "Comment KEYWORD and we'll DM you the X", using the exact keyword the automation listens for.
-- **Hashtags: up to 5.** Instagram now allows at most 5 hashtags on a post or reel. Pick specific ones from the client's approved set, put them at the end.
+- **Hashtags: up to 5.** Instagram now allows at most 5 hashtags on a post or reel (check the app if a post is refused). Pick specific ones from the client's approved set, put them at the end.
 - **Mentions** only for accounts the agency or the brand file names. Tagging an account notifies it.
 - **Length:** 2,200 characters at most, including hashtags.
 - **Alt text:** write one line describing the image for screen readers, unless the brand file says otherwise.
@@ -130,7 +130,7 @@ The public comment reply, the DM wording and the follow-up are copied from the c
 
 When the agency approves, switch it on: `attach_comment_to_dm` with the post `id` and `active: true`. It only targets this one post, from draft through publish.
 
-**Full route.** For more than "comment, get a link" (email capture before the link, a booking, a hand-over to the AI agent, several steps), use the `dm-flow-builder` skill, or in Inrō **Automation > Scenarios > Create new scenario > Comment to DM link**. The post composer in Inrō also has a **Comment automation** step.
+**Full route.** For more than "comment, get a link" (email capture before the link, a booking, a hand-over to the AI agent, several steps), use the `dm-flow-builder` skill, or in Inrō **Automation > Scenarios > New scenario > Comment to DM link**. The post composer in Inrō also has a **Comment automation** step.
 
 Grid posts made in the app can't carry a comment automation; add one to each tile after they're live.
 

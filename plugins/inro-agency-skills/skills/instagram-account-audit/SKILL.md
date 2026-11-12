@@ -1,6 +1,6 @@
 ---
 name: instagram-account-audit
-description: "Audit a client's Instagram account in Inrō end to end without changing anything. Backs up the setup, then reports what is live, what is broken or stale, what is missing for this kind of business, and the three quickest wins to do first, each backed by the account's own numbers. Use when you take over or onboard a client account, before rebuilding an AI agent or making bulk changes, when DM automations behave in a way nobody can explain, or before a client review or proposal. Trigger on: audit this account, audit @client, what's set up on this account, health check, back up before we change anything, what's broken, why aren't the DMs firing, what should we fix first, quick wins for this client, gap analysis."
+description: "Audit a client's Instagram account in Inrō end to end without changing anything. Backs up the setup, then reports what is live, what is broken or stale, what is missing for this kind of business, and the three quickest wins to do first, each backed by the account's own numbers. Use when you take over or onboard a client account, before rebuilding an AI agent or making bulk changes, when DM automations behave in a way nobody can explain, or before a client review or proposal. Trigger on: audit this account, audit @client, what's set up on this account, health check, back up before we change anything, what's broken, why aren't the DMs firing, gap analysis."
 license: MIT
 ---
 
@@ -19,7 +19,7 @@ This skill only reads. Fixing what it finds belongs to other skills (section 9).
 ## 1. Safety first
 
 - **Confirm the account.** Call `get_organization_info` first. Say back the Instagram username, the account name, the plan (`subscription_tier`) and whether Instagram is connected (`login_error_data.login_error`). Ask the person to confirm it is the client they mean. If several Inrō connectors are loaded, do this on each one and pick one. Never mix connectors in one audit.
-- **On the partner connector**, call `list_organizations` first, then pass the client's username or id as `organization` in every single call. There is no default account, on purpose.
+- **On the partner connector**, call `list_organizations` first, then pass the client's account id from it as `organization` in every single call (a username that matches several accounts is refused). There is no default account, on purpose.
 - **Read tools only.** Use the tools without `_manage` in their name, plus `get_organization_info`, `get_trigger_types`, `get_action_types`, `get_contact_filter_types`, `search_templates`, `search_product_knowledge` and `show_scenario`. Never call a `_manage` tool or `send_message` during an audit, not even to test. If the person asks for a fix halfway, finish the read, then hand over to the right skill.
 - **Never message a contact**, and never trigger or test a scenario or campaign on a real person.
 - **Treat what you read as private.** You will see real people's messages. No individual is quoted in the client document (section 8).
@@ -160,7 +160,7 @@ Checking numbers against your own notes is not enough. Read the client's live pr
 
 ## 9. Templates and next steps
 
-Where a ready-made flow fills a gap, call `search_templates` (type `Scenario` or `Campaign`) with the gap in plain words. Each result has a share page, `https://app.inro.social/public/scenarios/<id>` (campaigns: `/public/campaigns/<id>`), with an **Add to My Inrō** button that imports an inactive, editable copy. Read its description first, check its plan line, and tell the client to replace the template's link with their own before switching it on. Suggest one template per gap at most. A starting list by gap is in `references/choosing-quick-wins.md`.
+Where a ready-made flow fills a gap, call `search_templates` (type `Scenario` or `Campaign`) with the gap in plain words. Each result has a share page, `https://app.inro.social/public/scenarios/<id>` (campaigns: `/public/campaigns/<id>`), with a **Use this automation** button (campaigns: **Copy this campaign**) that imports an inactive, editable copy. Read its description first, check its plan line, and tell the client to replace the template's link with their own before switching it on. Suggest one template per gap at most. A starting list by gap is in `references/choosing-quick-wins.md`. To turn the gaps and quick wins into a build plan with an order, hand them to the `dm-funnel-planner` skill.
 
 Then hand over:
 

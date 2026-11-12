@@ -10,8 +10,8 @@ These are Instagram's rules, as Inrō's help center describes them (https://help
 - That first DM has to go out within **7 days** of the comment.
 - Anything after the first DM needs the person to reply or tap first. A tap or a reply opens a 24-hour window in which the rest of the flow goes through.
 - People who don't follow the account get the DM in their message requests, and show as **Requested** in Inrō until they accept or reply.
-- A link sent as a tappable link card is the reliable way to deliver a link. Raw links typed into DM text get throttled.
-- On very busy posts, Instagram starts skipping some automated public comment replies. The DMs are what matter.
+- A link sent as a tappable link card is the reliable way to deliver a link. Raw links typed into DM text may get throttled.
+- On very busy posts, Inrō's comment reply limiting (an option on the public reply step) skips some public replies to keep the account safe. The DMs are what matter.
 
 So the reel's promise and the first DM have to fit together: the first DM is a single message that should give, or unlock with one tap, what the reel promised.
 
@@ -72,7 +72,7 @@ In 2024 Instagram clarified that engaging people in comments and DMs to build re
 4. The DM wording sounds like the client, not like a template. The quick automation copies wording from the client's last comment-to-DM automation, so read it.
 5. Someone on the agency side has commented the keyword from an account the team controls and received the DM. Never test on real followers.
 6. If the reel is about an offer, the client's AI agent has a note on the post (price, dates, stock) so it can answer follow-up questions.
-7. If the post was already live with comments before the automation was switched on, check whether you want to run it on those comments. Switching a comment scenario on in Inrō offers **Trigger on existing comments** for the last 7 days.
+7. If the post was already live with comments before the automation was switched on, check whether you want to run it on those comments. Switching a comment scenario on in Inrō offers **Catch up** for comments from the last 7 days.
 
 ## Common misses
 

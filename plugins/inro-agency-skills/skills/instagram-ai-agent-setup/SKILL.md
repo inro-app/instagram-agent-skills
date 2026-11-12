@@ -12,7 +12,7 @@ Configure a client's Inrō AI agent so it answers DMs in the client's voice, say
 
 ## Ground rules for every run
 
-1. **Confirm the account first.** Call `get_organization_info` and say back the username, the plan (`subscription_tier`) and whether the Instagram connection is healthy. On the partner connector, name the client in every single call. If it is not the account you mean, stop.
+1. **Confirm the account first.** Call `get_organization_info` and say back the username, the plan (`subscription_tier`) and whether the Instagram connection is healthy. On the partner connector, name the client in every single call, by the account id from `list_organizations`. If it is not the account you mean, stop.
 2. **Read before you write.** Do the read-only pass in Step 1 and save a backup before any change.
 3. **Plan, then OK.** Show the full spec and the exact list of writes. Write nothing until the user approves. The agent is live config: a saved change reaches real conversations immediately.
 4. **Lists are replaced whole.** `rules`, `message_examples`, `trigger_intents.intents` and `folder_rules.folder_ids` are sent as the complete list. A partial `rules` list deletes every rule you left out. Always start from the list `agent` `get` returned.
@@ -188,10 +188,10 @@ For the first week, read the agent's conversations daily (inbox filter **Current
 
 ## Templates that use the agent
 
-Inrō has ready-made automations that run on the agent you set up here. Opening a share page and clicking **Add to My Inrō** imports an inactive copy into the client's account:
+Inrō has ready-made automations that run on the agent you set up here. Opening a share page and clicking **Use this automation** imports an inactive copy into the client's account:
 
 - **Handle DMs with AI** (template 6085, `https://app.inro.social/public/scenarios/6085`): answers questions in DMs and story replies from the knowledge base, and files what it cannot answer as "Needs a human" with an email alert to the team.
-- **Qualify and book DM leads** (template 6021, `https://app.inro.social/public/scenarios/6021`): AI judges whether a lead is a good fit, sends good fits the booking link and alerts the team, and sends the rest a lighter resource.
+- **Qualify and book DM leads (AI)** (template 6021, `https://app.inro.social/public/scenarios/6021`): AI judges whether a lead is a good fit, sends good fits the booking link and alerts the team, and sends the rest a lighter resource.
 
 Gallery names can change; the ids and share pages stay. You can also find them with `search_templates`. To adapt and test them, use `dm-flow-builder`.
 

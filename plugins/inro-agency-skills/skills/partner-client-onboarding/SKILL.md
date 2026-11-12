@@ -1,6 +1,7 @@
 ---
 name: partner-client-onboarding
 description: "Onboard a new client under your Inrō agency partner account. Covers the partner dashboard side (create the client account or a managed link, the optional automation template, your logo on the connect page), getting the client to connect their Instagram, confirming the connection, then the first steps through the partner connector: a read-only baseline and the first automations, created switched off. Use when you say: onboard a new client, add a client to my partner account, create a client account, set up a managed link, send the client the Instagram connect link, the client has connected, new client on Inrō, what do I do after the client connects."
+license: MIT
 ---
 
 # Partner client onboarding

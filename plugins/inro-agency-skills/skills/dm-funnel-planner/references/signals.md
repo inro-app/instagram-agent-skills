@@ -1,6 +1,6 @@
 # Reading the account: calls, numbers and traps
 
-Every call here is a read. On the partner connector, add the client (`organization`: username or id) to every call.
+Every call here is a read. On the partner connector, add the client (`organization`: the account id from `list_organizations`) to every call.
 
 Tool names below are the Inrō connector's tools as your assistant sees them. Read tools and write tools are separate: `scenarios` reads, `scenarios_manage` writes. This skill only uses the read tools.
 

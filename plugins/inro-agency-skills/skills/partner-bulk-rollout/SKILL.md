@@ -1,6 +1,7 @@
 ---
 name: partner-bulk-rollout
 description: "Roll one change out across many client Instagram accounts through the Inrō partner connector, safely and one client at a time. Covers an automation from a template or copied from one client, a fix to an existing automation, the same ice breakers or persistent menu entry, a contact property, opt-out keywords, a contact or automation folder, and a draft campaign. Reads every target account first, shows a per-client plan with duplicates and conflicts for your approval, applies it client by client with new automations switched off, and ends with a results table and a rollback list. Use when you say: roll this out to all my clients, copy this automation to every account, add these ice breakers to these clients, push this fix everywhere, same change across my accounts, bulk update client accounts, apply this to the clients on my list."
+license: MIT
 ---
 
 # Partner bulk rollout

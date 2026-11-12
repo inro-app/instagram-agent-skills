@@ -62,7 +62,7 @@ Exact calls, parameters and the wording each number gets in the report: `referen
 
 - **Activated contacts** (the billing number). `executions` → `health` returns `account.contact_activations_used`, but for the current billing period so far, not a calendar month. For the calendar month, the agency reads **Activated contacts** on the client's Inrō Dashboard with the month as the date range. Partners also see usage by account on the partner dashboard's Billing page, for the billing period.
 - **Conversations the AI agent answered on its own.** Not counted by the connector. In the app: AI Agent page, **Message history**. What the connector can count: AI steps inside automations (their `sent` in `performance`) and automation runs the agent started (`executions` → `list`, `execution_type: "agent"`).
-- **Followers.** Inrō has no account-level follower count. Ask the agency for the number or leave it out. Never put a blank row in a client document.
+- **Followers.** The connector returns no follower count, and the partner dashboard shows today's count only. Ask the agency for the month's numbers or leave it out. Never put a blank row in a client document.
 
 ## 3. Compare
 

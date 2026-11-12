@@ -1,6 +1,6 @@
 # Read order, tool by tool
 
-Every call here only reads. On the partner connector, add `"organization": "<client username or id>"` to each one.
+Every call here only reads. On the partner connector, add `"organization": "<client account id>"` to each one.
 
 Tool names, fields and values below were checked against the connector and the app in November 2026. If a live response disagrees with this file, the live response wins.
 

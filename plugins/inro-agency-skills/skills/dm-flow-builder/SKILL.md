@@ -8,7 +8,7 @@ license: MIT
 
 Build the automations from a plan, one at a time, on one client's account. Everything is created switched off, checked, tested on your own account, and switched on only when the user says so.
 
-**Requirements.** The Inrō connector (`https://api.inro.social/mcp`, sign in with OAuth), connected to the client's account. The account must be on Pro or Trial, and one connection reaches one account. If you manage many clients, use the Inrō partner connector (`https://api.inro.social/partner/mcp`, your partner token in an `Authorization: Bearer` header); every request then names the client by Instagram username or account id, and each client still needs Pro or Trial. Without a connector, this skill can still write the build spec and the click-by-click steps for someone to follow in the Inrō app.
+**Requirements.** The Inrō connector (`https://api.inro.social/mcp`, sign in with OAuth), connected to the client's account. The account must be on Pro or Trial, and one connection reaches one account. If you manage many clients, use the Inrō partner connector (`https://api.inro.social/partner/mcp`, your partner token in an `Authorization: Bearer` header); every request then names the client, preferably by the account id from `list_organizations` (a username that matches several accounts is refused), and each client still needs Pro or Trial. Without a connector, this skill can still write the build spec and the click-by-click steps for someone to follow in the Inrō app.
 
 If there is no plan yet, run `dm-funnel-planner` first, or at least agree the goal, the entry point and the destination of the one flow you are building.
 
@@ -103,7 +103,7 @@ Instagram rules, they apply to every tool:
 - **One DM per comment until the person responds.** The first DM is a private reply. Anything after it waits until they reply, tap a button or open a link card. Inrō holds a second message, retries it, and drops it if they never respond.
 - **7 days.** A comment can only be answered by DM within 7 days. Comments on a Live: 24 hours.
 - **So the first DM must ask for a tap or reply**: a button (`button_template`), a question (`ask_question`), a follow request (`ask_for_follow`) or an email request (`collect_property`). If the first DM is plain text, follow it with `wait_for_reply` before anything else. The link comes after.
-- **No raw URL in the first message.** Meta blocks DMs with plain links when an account sends many. Send links as a link card (`conversion_link`).
+- **No raw URL in the first message.** Meta may block DMs with plain links when an account sends many. Send links as a link card (`conversion_link`).
 - **Reply publicly too** with a `comment` step, with two or three variants. Public replies are only possible on top-level comments.
 - **Choose the keyword with care.** Keywords match whole words, ignoring case and accents; a keyword of 4+ letters also matches its plural. Check the word against the client's captions and recent comments so it does not fire on ordinary comments.
 - **One post choice and one comment filter per trigger.** For keyword plus AI intent, add two comment triggers to the same scenario: one `comment_keywords`, one `ai_detected` with a short intent ("asks how to get the free guide"). An AI intent needs AI features and uses credits.

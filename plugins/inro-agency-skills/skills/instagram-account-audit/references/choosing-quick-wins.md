@@ -44,7 +44,7 @@ If the condition is not true on this account, the play is not on the table.
 
 **A campaign only reaches people inside Instagram's messaging window.** Inrō's campaign templates describe it as people who messaged the account in the last 24 hours. A big list that has been quiet for months is not a campaign opportunity. Reopen those conversations through comments, stories or ads instead, and size any campaign on people active recently.
 
-**A flow's later steps are not limited the same way.** A delay step can wait days, so a follow-up a week later is a real build. It reaches the people who are still in the conversation, and email carries it to the rest. Write "reaches people still active in the conversation", never "cannot be sent".
+**A flow's later steps are not limited the same way.** A delay can wait days, but the DM only goes out if the person wrote in the last 24 hours; otherwise it is held, then dropped. Keep follow-ups within hours, and use email for later ones. Write "reaches people still active in the conversation", never "cannot be sent".
 
 **For links, Inrō records taps, not page visits.** Write "did not tap the link", never "did not visit the page".
 
@@ -112,7 +112,7 @@ Every quick win also appears in the full setup. A row nobody could act on, or on
 
 ## Templates for common gaps
 
-Find templates with `search_templates`, then open the share page before you suggest one. Use results that have a full description with "What it does", "What to set up" and a "Plan" line; skip entries with no description, which are older templates. "Add to My Inrō" on a share page imports an inactive, editable copy. Replace the template's link and any example values before switching it on.
+Find templates with `search_templates`, then open the share page before you suggest one. Use results that have a full description with "What it does", "What to set up" and a "Plan" line; skip entries with no description, which are older templates. **Use this automation** on a share page imports an inactive, editable copy. Replace the template's link and any example values before switching it on.
 
 Starting list (checked November 2026; names and the library change, so confirm with `search_templates`):
 

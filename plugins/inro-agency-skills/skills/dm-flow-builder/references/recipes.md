@@ -197,7 +197,7 @@ Between steps 2 and 3, the new ice breaker shows on the profile with nothing beh
 The menu inside every DM thread. Keep it to 5 entries or fewer; titles are cut at 30 characters. Changes are live on Instagram at once.
 
 - A link entry: `persistent_menu_manage` add with `"type": "web_url"`, `title`, `url`. It opens the page and starts no automation.
-- An automated entry: add with `"type": "postback"` and a `title`; the response gives its `payload`. Build a scenario with an `icebreaker` trigger on that payload.
+- An automated entry: add with `"type": "postback"`, a `title`, and `payload` set to an existing ice breaker's payload, so the scenario that answers that ice breaker answers the menu entry too. An `icebreaker` trigger on a menu-only payload shows an issue.
 - The opt-out entry is kept in step with the opt-out setting. Deleting it turns opt-out off. Leave it alone.
 
 ## 9. Follow-ups and chaining

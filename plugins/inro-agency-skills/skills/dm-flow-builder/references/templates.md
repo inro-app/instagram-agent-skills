@@ -15,13 +15,18 @@ Plan notes: "Free" runs on any plan, "Pro" needs Pro or Trial, "AI credits" need
 | Collect emails from audience | Comments with your keyword | Public reply, asks if they want the freebie, asks for their email, sends the link | Free | https://app.inro.social/public/scenarios/6022 |
 | Grow followers with a freebie | Comments with your keyword | Followers get the link; others are asked to follow first | Free | https://app.inro.social/public/scenarios/6028 |
 | Book calls from comments | Comments with your keyword | One question; ready people get the booking link and you get an alert, the rest a free resource | Free | https://app.inro.social/public/scenarios/6025 |
-| Get event sign-ups | Comments with your keyword | Asks for an email, sends the registration link, files them as registered | Free | https://app.inro.social/public/scenarios/6054 |
 | Build a launch waitlist | Comments with your keyword | Adds them to a waitlist folder and asks for an email | Free | https://app.inro.social/public/scenarios/6081 |
 | Run a tag-a-friend giveaway | Comments that tag someone | Asks for a follow, then an email, then confirms the entry | Free | https://app.inro.social/public/scenarios/6018 |
 | Story replies to link clicks | Story replies with your keyword | Sends your link, one reminder if they do not open it | Free | https://app.inro.social/public/scenarios/6023 |
 | Send product links during lives | Live comments with your keyword | DMs a button, then the product link | Pro | https://app.inro.social/public/scenarios/4393 |
 | Book calls from your ads | Replies to a click-to-message ad | One question and an email, then the booking link or a lighter resource | Free | https://app.inro.social/public/scenarios/6222 |
 | Welcome customers from a QR code | A scan of your QR code or ig.me link | Sends a welcome offer and code, files them in a folder | Free | https://app.inro.social/public/scenarios/6019 |
+| Answer price questions in DMs | Comments asking about the price | Sends the price and the product link | Free | https://app.inro.social/public/scenarios/36436 |
+| FAQ buttons in your DMs | People opening your DMs (ice breakers) | Answers common questions from buttons | Free | https://app.inro.social/public/scenarios/36428 |
+| Recommend products with a quiz | Comments with your keyword | Asks two questions, then sends the right product | Free | https://app.inro.social/public/scenarios/36438 |
+| Get bookings from DMs | DMs with your keyword | Sends your booking link | Free | https://app.inro.social/public/scenarios/36437 |
+| Handle comments with AI | Comments on your posts | AI likes and replies to them | Pro and AI credits | https://app.inro.social/public/scenarios/36431 |
+| Catch collab requests in DMs | Collab pitches in DMs | AI flags them and emails them to you | AI credits | https://app.inro.social/public/scenarios/36429 |
 | Qualify and book DM leads (AI) | DMs with your keyword | AI judges the answer to one question; hot leads get the booking link and alert your team | Pro and AI credits | https://app.inro.social/public/scenarios/6021 |
 | Handle DMs with AI | Questions in DMs or story replies | AI answers from the knowledge base; anything it cannot answer is filed for a person and emailed to your team | Pro and AI credits | https://app.inro.social/public/scenarios/6085 |
 | Thank positive comments | Kind comments | Likes the comment and replies with a short thanks | Free | https://app.inro.social/public/scenarios/6082 |

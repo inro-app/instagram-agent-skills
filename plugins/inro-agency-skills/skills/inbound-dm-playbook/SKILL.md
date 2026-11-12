@@ -12,7 +12,7 @@ What every client account should do with the DMs that come in, in which order, a
 
 ## Safety rules
 
-1. Confirm the account with `get_organization_info` before anything, and say back the username and tier. On the partner connector, name the client in every call.
+1. Confirm the account with `get_organization_info` before anything, and say back the username and tier. On the partner connector, name the client in every call, by the account id from `list_organizations`.
 2. Read what is live first (`scenarios` `list`, `scenario_folders` `list`, `agent` `get`, `icebreakers` `list`). Never add a flow that duplicates one already running.
 3. Show the plan, with exact message text, and get the user's OK before any write.
 4. Everything you add starts switched off. Template copies arrive inactive; keep them that way until go-live is approved.
@@ -86,7 +86,7 @@ Each one: what it does, what to set after import, and the trap to avoid. Exact s
 - **One reminder, then stop.** The templates use one: "Have you checked the link yet?" on the link's expired branch, after about 2 hours. A question waits up to about 20 hours. Never chain reminders.
 - **Never promise what no flow does.** "Message me when you want the link" needs a flow that catches it. Under **Automation only** nothing else will. Send the link now instead: "No rush, here's the link for whenever you're ready."
 - **Going quiet after a team reply is fine.** The team hold keeps automations out; don't build a follow-up on top of the team's own conversation.
-- **Closures and holidays.** Inbox settings → **Time-off** sends an auto-reply to the first message anyone sends until the last day you pick. There is no daily opening-hours schedule for flows that we could confirm. For "outside hours", let the AI front desk answer and make every handover message honest about when a person replies ("The team replies Monday to Friday, usually the same day").
+- **Closures and holidays.** Inbox settings → **Time-off** sends an auto-reply to the first message anyone sends until the last day you pick. There is no opening-hours schedule for flows. For "outside hours", let the AI front desk answer and make every handover message honest about when a person replies ("The team replies Monday to Friday, usually the same day").
 - **Re-engaging people who went cold** is a campaign, not an inbound flow. Leave it out of this playbook.
 
 ## 5. Writing the AI intents
@@ -133,7 +133,7 @@ Same map, different emphasis. Full versions with ice breakers, menu and sensitiv
 ## 8. Importing a template
 
 1. Find it: `search_templates` (`type: "Scenario"`, a plain query like "collab requests"), or use the id from `references/templates.md`. Preview it on its share page, `https://app.inro.social/public/scenarios/<id>`.
-2. Import with the user's OK: `scenarios_manage` `create` with `template_id` (nothing else in that call). In the app: the share page's **Add to My Inrō** button, or **Browse templates** on the Scenarios page and **Use this automation**. Both import into the account you're logged in to, so check the organisation switcher first. If a template isn't in the in-app library, its share page and id still work.
+2. Import with the user's OK: `scenarios_manage` `create` with `template_id` (nothing else in that call). In the app: the share page's **Use this automation** button, or **New scenario**, then **or choose a template**. Both import into the account you're logged in to, so check the organisation switcher first. If a template isn't in the in-app library yet, import it from its share page instead of the connector.
 3. The copy arrives inactive, with its own copies of the template's links, and its folders matched by exact name (created when the client has none with that name).
 4. Fix before anything else: every link URL, every alert email address (templates ship empty, which shows as an issue), ice breaker triggers (point at the client's payloads), keywords, the AI intent text, the message text in the client's voice, run limit and interrupts.
 5. Place it: `scenarios_manage` `update` with `scenario_folder_id` (Inbound DMs or Helpers) and `scenario_folder_priority`, then `scenario_folders_manage` `reorder` for the whole folder. Set excluded folders in the app.

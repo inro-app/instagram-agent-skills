@@ -39,7 +39,7 @@ Params: `since` (ISO 8601, default 7 days ago, at most 90 days back), `until` (d
 | `failure_rate` | Share of runs that `failed` or `partially_completed`, from 0 to 1. |
 | `account.instagram_connected` | `false` stops every automation at once. Editing a flow will not help. |
 | `account.contact_activation_limit_reached` | `true` stops automations messaging new people until the period resets or the plan changes. |
-| `account.contact_activations_used`, `account.contact_activations_limit` | Usage this billing period. No limit on Pro. |
+| `account.contact_activations_used`, `account.contact_activations_limit` | Usage this billing period. No cap on Pro unless the account set its own. |
 | `top_failing` | Up to 5 automations ranked by failure rate, not volume: `type`, `id`, `title`, `executions`, `failed`, `failure_rate`, `top_reason_code`. |
 | `top_reason_codes` | The most common reasons runs ended other than completing, as `reason_code` and `count`. |
 

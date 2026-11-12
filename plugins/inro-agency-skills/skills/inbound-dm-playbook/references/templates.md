@@ -1,6 +1,6 @@
 # Templates for inbound DMs
 
-Every template here imports as an **inactive** copy. Share page: `https://app.inro.social/public/scenarios/<id>` (works logged out, with an **Add to My Inrō** button). Connector: `scenarios_manage` `create` with `template_id: <id>`. Names are the ones in the in-app library; if a name has changed, the id still works.
+Every template here imports as an **inactive** copy. Share page: `https://app.inro.social/public/scenarios/<id>` (works logged out, with a **Use this automation** button). Connector: `scenarios_manage` `create` with `template_id: <id>`, for templates in the in-app library. A template that is not in the library yet: import it from its share page. Names are the ones in the in-app library; if a name has changed, the id still works.
 
 What happens on import:
 - Links are copied into the client's account as their own link records. Replace each URL.

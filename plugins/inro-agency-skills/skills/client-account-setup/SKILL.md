@@ -8,7 +8,7 @@ license: MIT
 
 Take a client's Instagram account in Inrō from "connected" to "live and safe", or take over one that someone else built. This file is the procedure. The detail is in `references/`.
 
-**Requirements.** One client: the Inrō connector (`https://api.inro.social/mcp`, OAuth). One connection reaches one Instagram account, and that account must be on Pro or Trial. Many clients: the Inrō partner connector (`https://api.inro.social/partner/mcp`, your partner token in an `Authorization: Bearer` header). Every partner call names the client in its `organization` field (Instagram username or account id), and each client still needs Pro or Trial. Without a connector you can still run the intake, write the plan and the client update, and follow the in-app steps by hand.
+**Requirements.** One client: the Inrō connector (`https://api.inro.social/mcp`, OAuth). One connection reaches one Instagram account, and that account must be on Pro or Trial. Many clients: the Inrō partner connector (`https://api.inro.social/partner/mcp`, your partner token in an `Authorization: Bearer` header). Every partner call names the client in its `organization` field (prefer the account id from `list_organizations`; a username that matches several accounts is refused), and each client still needs Pro or Trial. Without a connector you can still run the intake, write the plan and the client update, and follow the in-app steps by hand.
 
 | File | What it holds | Read it when |
 |---|---|---|

@@ -89,6 +89,6 @@ Activated contacts, the billing unit, are counted once per contact per billing p
 
 ## Things to leave out
 
-- Follower growth: not in Inrō. Ask the agency or leave it out.
+- Follower growth: not in the connector (the partner dashboard shows today's count only). Ask the agency or leave it out.
 - Any platform-wide average or benchmark.
 - Anything Inrō cannot see: sales on the client's website, emails sent from another tool, flows run by another automation tool.

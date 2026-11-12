@@ -33,7 +33,7 @@ Last reviewed: November 2026.
 | One private reply | One DM per comment from an automation, within 7 days of the comment | Inrō help center, https://help.inro.social/en/articles/10456326 |
 | Opening the conversation | After the first DM, the person must reply or tap before more messages go through; then a 24-hour window opens | Same |
 | Non-followers | Get the DM in message requests ("Requested" in Inrō) until they accept | Same |
-| Links | Send links as a tappable link card; raw links in DM text get throttled | Inrō help center, https://help.inro.social/en/articles/15632060 |
+| Links | Send links as a tappable link card; raw links in DM text may get throttled | Inrō help center, https://help.inro.social/en/articles/15632060 |
 | Keyword matching in Inrō | Ignores case and accents | Inrō help center, https://help.inro.social/en/articles/10267476 |
 
 ## Screen layout

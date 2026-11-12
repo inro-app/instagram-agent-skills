@@ -20,7 +20,7 @@ Decide what DM automation to build for one client, and in what order, from the t
 
 ## 1. Confirm the account
 
-Call `get_organization_info` (on the partner connector, pass the client's username or id). Say back to the person:
+Call `get_organization_info` (on the partner connector, pass the client's account id from `list_organizations`). Say back to the person:
 
 - the Instagram username and account name,
 - the plan (`subscription_tier`): Pro or Trial is needed for the connector to work at all,
@@ -103,7 +103,7 @@ For every quick win, and briefly for each fuller-funnel row, write:
 
 Design defaults that hold on Instagram:
 
-- **After a comment, Instagram allows one DM until the person replies or taps.** So the first DM asks for a tap or a reply (a button, a question, a follow request, an email request), and the link comes after. This also keeps the link out of the first message, where plain links get blocked.
+- **After a comment, Instagram allows one DM until the person replies or taps.** So the first DM asks for a tap or a reply (a button, a question, a follow request, an email request), and the link comes after. This also keeps the link out of the first message, where plain links may get blocked.
 - **Send links as a link card** (conversion link), not as a raw URL in the text. Clicks are tracked and delivery is more reliable.
 - **One clear button beats several.** One clear keyword per post beats a list.
 - **Reply to the comment publicly as well**, so the post keeps moving and the person knows to check their DMs.
