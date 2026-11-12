@@ -1,0 +1,11 @@
+{
+  "name": "inro-agency-skills",
+  "description": "Skills for agencies that run Instagram DM automation for their clients with Inrō: audit, plan, build, set up the AI agent, report, and manage many clients at once.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Inrō",
+    "url": "https://inro.social"
+  },
+  "homepage": "https://github.com/inro-app/inro-agency-skills",
+  "license": "MIT"
+}

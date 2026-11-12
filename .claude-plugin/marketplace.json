@@ -1,0 +1,15 @@
+{
+  "name": "inro-agency-kit",
+  "owner": {
+    "name": "Inrō",
+    "email": "support@inroapp.com"
+  },
+  "description": "Inrō skills for agencies that run Instagram DM automation for their clients.",
+  "plugins": [
+    {
+      "name": "inro-agency-skills",
+      "source": "./plugins/inro-agency-skills",
+      "description": "Skills for agencies that run Instagram DM automation for their clients with Inrō: audit, plan, build, set up the AI agent, report, and manage many clients at once."
+    }
+  ]
+}

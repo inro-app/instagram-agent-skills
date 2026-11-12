@@ -1,0 +1,96 @@
+{
+  "client": {
+    "username": "client_handle",
+    "account_id": 0,
+    "connector": "partner"
+  },
+  "month": "2026-10",
+  "window": {
+    "since": "2026-10-01T00:00:00+02:00",
+    "until": "2026-11-01T00:00:00+01:00",
+    "time_zone": "Europe/Paris",
+    "contact_filter_days": ["2026-10-01", "2026-10-31"]
+  },
+  "counted_at": "2026-11-03T09:40:00Z",
+  "runs": {
+    "total": 0,
+    "completed": 0,
+    "failed": 0,
+    "partially_completed": 0,
+    "limited": 0,
+    "disconnected": 0,
+    "restricted": 0,
+    "failure_rate": 0.0
+  },
+  "automations": [
+    {
+      "type": "scenario",
+      "id": 0,
+      "title": "Comment PRICE, DM price list",
+      "active": true,
+      "created_at": "2026-10-12T10:00:00Z",
+      "runs": 0,
+      "first_message_sent": 0,
+      "first_message_read": 0,
+      "link_clicked": 0,
+      "converted": 0,
+      "ai_replies_sent": 0
+    }
+  ],
+  "campaigns": [
+    {
+      "id": 0,
+      "title": "October offer",
+      "sent_at": "2026-10-20T17:00:00Z",
+      "contacts": 0,
+      "sent": 0,
+      "opened": 0,
+      "converted": 0,
+      "failed": 0
+    }
+  ],
+  "contacts": {
+    "new_first_interaction": 0,
+    "engaged_any_engagement": 0,
+    "went_through_an_automation": 0,
+    "received_a_campaign": 0,
+    "clicked_any_link": 0,
+    "clicked_by_link": [
+      { "conversion_link_id": 0, "title": "Book a call", "clickers": 0 }
+    ],
+    "survey_completed": 0,
+    "total_to_date": 0,
+    "total_to_date_capped": false,
+    "with_email_to_date": 0,
+    "with_phone_to_date": 0,
+    "with_property_to_date": [
+      { "property": "property_identifier", "label": "Budget", "contacts": 0 }
+    ]
+  },
+  "ai": {
+    "runs_started_by_agent": 0,
+    "agent_items_added": 0,
+    "agent_actions_added": 0
+  },
+  "posts": {
+    "published": 0,
+    "with_insights": 0,
+    "combined_reach": 0,
+    "combined_views": 0,
+    "likes": 0,
+    "saved": 0,
+    "shares": 0
+  },
+  "stories": {
+    "published": 0,
+    "insights_available": false
+  },
+  "supplied_by_agency": {
+    "activated_contacts_from_dashboard": null,
+    "followers": null,
+    "notes": "Anything the agency told you, with who said it."
+  },
+  "shipped": [
+    "New comment flow on the launch reel (created 12 Oct)"
+  ]
+}
