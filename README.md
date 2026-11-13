@@ -60,10 +60,10 @@ Part of the Inrō Agency Automation Kit (templates, a free audit and the partner
 
 **Skills, as a plugin**
 ```
-/plugin marketplace add inro-app/inro-agency-skills
-/plugin install inro-agency-skills@inro-agency-kit
+/plugin marketplace add inro-app/instagram-agent-skills
+/plugin install inro-agency-skills@instagram-agent-skills
 ```
-The skills then show up as `/inro-agency-skills:<skill-name>`, and Claude also picks them up on its own when your request fits. To update later: `claude plugin marketplace update inro-agency-kit`, then `claude plugin update inro-agency-skills@inro-agency-kit`.
+The skills then show up as `/inro-agency-skills:<skill-name>`, and Claude also picks them up on its own when your request fits. To update later: `claude plugin marketplace update instagram-agent-skills`, then `claude plugin update inro-agency-skills@instagram-agent-skills`.
 
 Prefer plain folders? Copy the folders in `plugins/inro-agency-skills/skills/` into `~/.claude/skills/`. Use one way or the other, not both, or every skill shows up twice.
 
@@ -98,7 +98,7 @@ claude mcp add --transport http inro-partner https://api.inro.social/partner/mcp
 ## Help and feedback
 
 - Product help: [help.inro.social](https://help.inro.social) or support@inroapp.com
-- Something wrong in a skill: [open an issue](https://github.com/inro-app/inro-agency-skills/issues) ([how](CONTRIBUTING.md))
+- Something wrong in a skill: [open an issue](https://github.com/inro-app/instagram-agent-skills/issues) ([how](CONTRIBUTING.md))
 
 ## Licence
 
