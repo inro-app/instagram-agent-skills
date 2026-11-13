@@ -9,8 +9,8 @@ Tool names, fields and values below were checked against the connector and the a
 `get_organization_info` (no parameters). Read:
 
 - `username`, `name`: say both back and get a yes before you go on.
-- `subscription_tier`, `current_billing_period_end`: the plan, and when the trial or billing period ends.
-- `login_error_data.login_error` and `login_error_message`: `true` means Instagram is disconnected and every automation is stopped. The fix is in the app: **Accounts → Instagram account**, reconnect.
+- `subscription_tier`, `current_billing_period_end`: the plan, and when the trial or billing period ends. Read the tier as a hint, since it can lag the real plan. An account the connector does not serve is refused on every call, with a message that says so.
+- `login_error_data.login_error` and `login_error_message`: `true` means Instagram is disconnected and every automation is stopped. The fix is in the app: **Instagram account** in the account menu (the account name, bottom left), then reconnect.
 - `instagram_restrictions`: anything Instagram currently restricts on the account.
 - `can_publish`, `missing_publish_scopes`: only matters if the client publishes posts from Inrō.
 - `optout_options`: whether opt-out is on, its keywords, the menu entry and the confirmation message.
@@ -59,7 +59,7 @@ Icebreakers and the menu are read live from Instagram, so they show what people 
 | `trigger_mode` | **Activation rules**: All pending messages (`all_messages`), Specific intents only (`specific_messages`), Automation only (`automation_only`), Disable all replies (`never_reply`) |
 | `trigger_intents.intents` | **AI-detected intents**, used only with Specific intents only |
 | `folder_rules` | **Limit replies based on contact folders** (only these folders, or never these folders) |
-| `about` | **Voice and personality** → About (500 characters, included in every reply) |
+| `about` | **Voice and personality** → **Profile** (500 characters, included in every reply) |
 | `rules` with `kind: voice` | **Voice and personality** → Voice rules |
 | `message_length` | Message length: 10, 25 or 50 words |
 | `message_examples`, `auto_like` | Message examples; auto-like |
@@ -71,7 +71,7 @@ Icebreakers and the menu are read live from Instagram, so they show what people 
 | `contact_properties`, `built_in_property_access` | **User data collection**: which properties the agent detects and saves, and whether it may read the contact's email and phone |
 | `human_takeover_active`, `human_takeover_pause` | **Human intervention** → Handled by a team member: pause the agent for 1, 4, 12 or 24 hours after a person replies |
 | `request_human_scenario_id` | **Human intervention** → Request a human: the automation to run when someone asks for a person |
-| `context_migrated` | `false` means the agent still runs on older fields (`description`, `goals`, `chat_instructions`, `style_rules`, `role`, `account_type`, `audience_type`). The app moves them into About, Goal and rules the first time someone opens the AI Agent page. Back up the old fields too |
+| `context_migrated` | `false` means the agent still runs on older fields (`description`, `goals`, `chat_instructions`, `style_rules`, `role`, `account_type`, `audience_type`). The app moves them into Profile (`about`), Goal and rules the first time someone opens the AI Agent page. Back up the old fields too |
 | `model`, `reasoning` | only apply when the account uses its own OpenAI key; `null` means the plan default. Not editable through the connector |
 
 Resolve every `actions[].target_id`, `no_reply_scenario_id` and `request_human_scenario_id` against the lists you read in steps 5 and 7. A target that is switched off or no longer exists is dead wiring.
@@ -80,8 +80,8 @@ Resolve every `actions[].target_id`, `no_reply_scenario_id` and `request_human_s
 
 - `scenario_folders` → `list`. A **Priority folder** runs only the highest-priority matching scenario. A **Normal folder** runs every match, and so do scenarios in no folder.
 - `scenarios` → `list` with `per_page: 100` until done. Per scenario: `active`, `suspended`, `scenario_type`, `last_executed_at`, `metrics` (runs and conversions), `paused_executions` (`limited`, `disconnected`), `excluded_folder_ids`, `rate_limit_enabled` / `rate_limit_unit` / `rate_limit_value`, `interrupt_on_message`, `interrupt_on_reply`, `scenario_folder_id`, `updated_at`.
-- `scenarios` → `get` on every active scenario and on inactive ones that have run before: triggers with their options, and the action tree.
-- `show_scenario` on each active scenario. It draws the flow for the person and returns `has_warnings` and `has_issues`, the editor's own checks. Issues stop a flow; warnings are suggestions. The editor flags, among others: a raw link typed into a message, a second DM straight after a comment reply with no step that waits for the contact, adding a contact to a folder the scenario excludes, a trigger that can never fire, and a conversion link that no longer resolves.
+- `scenarios` → `get` on every active scenario that ran in the window, the five busiest of all time, and any inactive one with real past volume: triggers with their options, and the action tree. On an account with more than about 30 active scenarios, list the rest from the `scenarios` → `list` fields and say so.
+- `show_scenario` on the same scenarios. It draws the flow for the person and returns `warnings` (true or false) and `has_issues`, plus each step's own `warnings` list with a severity of `issue` or `suggestion`: the editor's own checks. Issues stop a flow; warnings are suggestions. The editor flags, among others: a raw link typed into a message, a second DM straight after a comment reply with no step that waits for the contact, adding a contact to a folder the scenario excludes, a trigger that can never fire, and a conversion link that no longer resolves.
 - `scenarios` → `performance` (`since`, at most 90 days back) on the three to five flows with the most runs and on every flow that fails.
 
 Trigger details that matter (confirm with `get_trigger_types`):
@@ -118,13 +118,15 @@ Use `contacts` → `filter` with `per_page: 1` and read `pagination.total_count`
 | In no folder | `folder` with no `value` |
 | Opted out | `status`, `operator: is_equal`, `value: optout` |
 | Following the account | `is_follower`, `operator: is_true` |
-| Came from ads | `referral_ad`, `date_operator: is_present` |
+| Came from ads | `referral_ad` with a window (`is_on_or_after`, `days_ago`, 30); `is_present` alone can be refused |
 | Clicked a given link | `clicked_conversion_link` with `conversion_link_id` and a window |
 | A custom property filled in | `contact_property`, `operator: is_present`, `options: {"contact_property": "property_123"}` |
 
+On larger accounts the connector can refuse some account-wide counts with "too many contacts to search or filter this way": `comment` without `media_id`, `clicked_conversion_link` without `conversion_link_id`, and `referral_ad` without a window. Count per post or per link instead, and say the account-wide figure was not available.
+
 - `folders` → `list` gives names and colours only. For each folder's size: `folders` → `list_contacts` with `per_page: 1`.
-- `segments` → `list`, then `get` for filters and the contact count.
-- `contact_properties` → `list`: title, slug, type, choices, `agent_active` (the agent detects it), `auto_detect`.
+- `segments` → `list`, then `get` for filters and `contacts_count` (it can be null; then count with the same filters if the connector allows it).
+- `contact_properties` → `list`: title, slug, `property_type`, choices, `auto_detect`. Whether the agent detects a property is in `agent` → `get` → `contact_properties`, not here.
 - `conversion_links` → `list`: title, URL, button. The list carries no click counts: count clicks with the filter above, and read conversions from each scenario's `metrics`.
 
 ## 8. Content coverage
@@ -132,7 +134,7 @@ Use `contacts` → `filter` with `per_page: 1` and read `pagination.total_count`
 - `medias` → `list` with `status: published` and `per_page: 100`. Sort by `posted_at` yourself, skip entries with no `posted_at`, and take the last 20 to 30 posts and reels. For each one: `caption`, `media_product_type`, `posted_at`, `comment_to_dm`, and `insights` when `insights_status` is `fresh` (reach, views, likes, comments, saves, shares). Instagram's comment count includes the account's own replies.
 - People commenting on one post: `contacts` → `filter` by `comment` with that post's `media_id` (its `instagram_id`) and a window.
 - A post is **covered** if it has a `comment_to_dm`, or an active comment scenario reaches it: `all_posts`; `caption_keywords` that appear in its caption; `caption_url` when its caption has a link; `select_posts` that include it; `next_post` only if it is that one post.
-- `stories` → `list`. Story `insights` include `replies` when fresh. Stories sync into Inrō as they are posted, so a newly connected account has little story history: say so instead of reading it as "no replies".
+- `stories` → `list`. Story `insights` include `replies` when fresh. Stories sync into Inrō as they are posted, so a newly connected account has little story history: say so instead of reading it as "no replies". The list is not in date order (two-year-old stories can come first) and each entry carries long media URLs: filter by `posted_at` yourself and keep the pull in a helper.
 - Story replies and mentions arriving: `contacts` → `filter` by `story_reply` or `story_mention` with a 30-day window.
 
 ## 9. Conversations, from a sample

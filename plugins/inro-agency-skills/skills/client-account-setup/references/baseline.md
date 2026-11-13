@@ -18,6 +18,8 @@ Create these on day one with exactly these names (`folders_manage` `create`, col
 | Complaint window (7d) | Temporary: someone complained, asked for a refund or had an order problem | The complaint flow | Its window timer (B4) | Yes, on price, buying and promo flows |
 | Internal test | Your agency's own test accounts | You | Never | Optional: filter it out of reports |
 
+On a takeover, the account may already have a folder doing one of these jobs under another name ("Handle manually" for Human only). Agree with the user whether to rename it to the standard name with `folders_manage` `update`, which keeps its contacts and lets template imports match it, or to create the standard folder and move the contacts. Don't keep two folders for the same job.
+
 Add lifecycle or interest folders only when a flow will use them (for example "Customer" or "Lead"). Templates also create their own click folders ("Bookings: clicked", "Shop: clicked" and similar): keep those, they make the monthly report easy.
 
 ## B2. Scenario folders
@@ -29,7 +31,7 @@ scenario_folders_manage create  {name: "Helpers", folder_type: "normal",
                                  description: "Silent helpers: team hold, windows, handover, likes."}
 ```
 
-- Put each new scenario in its folder with `scenario_folder_id` (and `scenario_folder_priority` for Inbound DMs, 1 is highest), then set the full order once with `scenario_folders_manage` `reorder` (first id gets priority 1). Read the folder back with `scenario_folders` `get`.
+- Put each new scenario in its folder with `scenario_folder_id` (and `scenario_folder_priority` for Inbound DMs, 1 is highest), then set the full order once with `scenario_folders_manage` `reorder` (first id gets priority 1). Read the order back with `scenarios` `list` (`scenario_folder_id` as a string, `order_column: "scenario_folder_priority"`, `order_direction: "asc"`); `scenario_folders` `get` shows only the count.
 - In the app these show on the Scenarios page as a **Priority folder** ("Only one scenario can trigger at a time") and a **Normal folder** ("Scenarios are triggered independently"). The help center calls them scenario groups. Prefer the connector for the order: dragging rows works but is easy to get wrong.
 - `scenario_folders_manage` `toggle_active` switches every scenario in a folder on or off at once. Don't use it at go-live: switch scenarios on one at a time.
 
@@ -133,7 +135,7 @@ agent_manage update {request_human_scenario_id: "HANDOVER_ID"}
 agent_manage update {no_reply_active: true, no_reply_scenario_id: "HANDOVER_ID"}   # only with Limit to instructions
 ```
 
-In the app: **AI Agent → Human intervention → Request a human**, "If contact asks to speak to a human, trigger this automation", and **AI Agent → Knowledge access and behaviour → Limit to instructions**, "If the agent cannot reply, trigger this automation". The agent already sends a short acknowledgement when someone asks for a person, so the scenario doesn't need a message of its own. Exclude Human only on it (B12). Switch it on with the rest after QA.
+In the app: **AI Agent → Human intervention → Request a human**, "If contact asks to speak to a human, trigger this automation", and **AI Agent → Knowledge access and behaviour → Limit to instructions**, "If the agent cannot reply, trigger this automation". The agent already sends a short acknowledgement when someone asks for a person, so the scenario doesn't need a message of its own. Exclude Human only on it (B12). Switch it on with the rest after QA. Until then the agent still starts it, but the run stops before its first step (reason `scenario_not_active`) and nobody is alerted, so it must be on before the agent replies to anyone.
 
 `HANDOVER_LIST` is the same list as in the agent's rules and the knowledge base (SKILL.md section 7). If you want to tell "asked for a person" apart from "the AI didn't know", make a copy for the second case with a different subject.
 
@@ -161,6 +163,7 @@ settings_manage update_optout {
 - **Keywords match a whole word anywhere in the message**, ignoring case and accents, and words of 4 or more letters also match a plural or one extra letter. So "stop" opts out someone who writes "can you stop my order?" For a shop, a booking business or anything with orders or memberships, consider dropping the bare "stop" and keeping "unsubscribe" and "opt out". Show the user this trade-off.
 - Keywords only catch text. AI detection works in conversations the agent replies to. The menu entry works for everyone.
 - Turning opt-out on adds the `menu_message` entry to the persistent menu, and it counts toward the five entries. A blank `menu_message` removes the entry and keeps keywords and AI detection on. Deleting that entry from the menu instead (`persistent_menu_manage` `delete`) turns opt-out off.
+- If `update_optout` returns an error, nothing was changed: read back with `get_optout`. Try the same change on the **Opt-out detection** card in the app, and if that fails too, contact Inrō support. Don't delete the opt-out menu entry as a workaround: it switches opt-out off, and switching it back on needs `update_optout` or the app.
 - An opted-out contact is skipped by every automation and campaign, and the status sticks. The team can still reply by hand. Only put someone back (**Remove contact from opt-out list**) when they asked.
 
 ## B8. Ice breakers and the persistent menu
@@ -168,14 +171,15 @@ settings_manage update_optout {
 **Ice breakers** (up to 4, shown when someone opens a chat with the client for the first time):
 
 - Use the questions the client gets most, in the client's words: "How much is it?", "Can I book this week?", "Do you ship to me?", "Can I talk to someone?".
-- Create with `icebreakers_manage` `create`; the response gives each one a payload. Then give each one a scenario with an ice breaker trigger on that payload (`{"trigger_type": "icebreaker", "options": {"icebreaker_payload": "PAYLOAD"}}`). The question text is filled in on save.
-- Check with `icebreakers` `list`: every entry should have a non-empty `automations` list (or be answered by the agent). In the app the **Manage ice breakers** card shows "Nothing answers this" when one has no answer.
-- Rewording an ice breaker with `icebreakers_manage` `update` keeps its payload, so a trigger on the payload keeps working. A trigger matching on the question text stops working when the question changes.
+- Create with `icebreakers_manage` `create`; the response gives each one a payload. Then give each one a scenario with an ice breaker trigger on that payload (`{"trigger_type": "icebreaker", "options": {"icebreaker_payload": "PAYLOAD"}}`). The trigger stores only the payload.
+- Check with `icebreakers` `list`: at go-live every entry should have at least one `automations` entry with `active: true` (or be answered by the agent). The list also shows switched-off scenarios, so a non-empty list alone proves nothing. In the app the **Manage ice breakers** card shows "Nothing answers this" when one has no answer.
+- Rewording an ice breaker with `icebreakers_manage` `update` keeps its payload, so a trigger on the payload keeps working. A trigger matching on the question text keeps matching while the new wording still contains the old question, and breaks on a full reword. The update response doesn't name a scenario it broke, so before a reword, switch any trigger on the question text to the payload.
+- A menu entry can reuse an ice breaker's payload with no issue (Persistent menu, below). Before you delete an ice breaker, check `persistent_menu` `get` for a postback with its payload: once the ice breaker is gone, that payload is menu-only and its trigger shows an issue.
 
 **Persistent menu** (always available in the chat, 5 entries or fewer including the opt-out entry, titles cut at 30 characters):
 
 - Links to off-Instagram places (shop, booking page) as `web_url` entries. They open the page and start no automation.
-- Entries that should start an automation as `postback` entries that **reuse an ice breaker's payload** (`persistent_menu_manage` `add` with `payload` set to it). The same ice breaker trigger then answers both the ice breaker and the menu tap. A postback with a payload no ice breaker has makes its trigger show an "ice breaker not found" issue, so avoid menu-only payloads unless you have checked how the scenario shows in the app.
+- Entries that should start an automation as `postback` entries that **reuse an ice breaker's payload** (`persistent_menu_manage` `add` with `payload` set to it). The same ice breaker trigger then answers both the ice breaker and the menu tap. Reusing an existing ice breaker's payload raises no issue anywhere: the add response, the scenario's `warnings` and `show_scenario` stay clean, and `icebreakers` `list` is unchanged. A trigger on a menu-only payload (one no ice breaker has) does show an issue: "The ice breaker this trigger answers is no longer on your Instagram profile." So don't use menu-only payloads.
 - Read the menu back with `persistent_menu` `get`. Menus and ice breakers live on Instagram, so the read shows what people actually see.
 
 **Run limits on button entries:** with a run limit, a second tap on the same ice breaker or menu entry gets no answer from that flow. Leave flows that are only reached by buttons without a limit, unless the client is happy with that.
@@ -199,9 +203,11 @@ settings_manage update_optout {
 - After a button tap: no wait, or a few seconds before a long message.
 - A contact writing during a wait doesn't stop the flow ("Interrupt when contact replies" is off). A manual team reply does.
 
-## B12. In-app steps (what the connector can't set)
+## B12. Excluded folders and the in-app steps
 
-**Excluded folders on a scenario.** Open **Automation → Scenarios**, open the scenario. In the editor, the **Advanced options** panel (top left) has three sections: **Limit frequency per contact**, **Interrupt on message replies** and **Exclude specific folders**. Open **Exclude specific folders** ("This scenario will not run for contacts in the selected folders"), pick the folders, then **Save scenario**. Read it back with `scenarios` `get` (`excluded_folder_ids`). Always click **Save scenario** before you close the editor.
+**Excluded folders on a scenario, by connector.** `scenarios_manage` `update` with `id` and the full `excluded_folder_ids` list, in a call of its own (it's ignored on `create` and alongside triggers or actions). The list replaces the old one, so send `[]` to clear it. The ids aren't checked: take them from `folders` list and read back with `scenarios` `get`.
+
+**Excluded folders on a scenario, in the app.** Or use **Exclude specific folders**: open **Automation → Scenarios**, open the scenario. In the editor, the **Advanced options** panel (top left) has three sections: **Limit frequency per contact**, **Interrupt on message replies** and **Exclude specific folders**. Open **Exclude specific folders** ("This scenario will not run for contacts in the selected folders"), pick the folders, then **Save scenario**. Read it back with `scenarios` `get` (`excluded_folder_ids`). Always click **Save scenario** before you close the editor.
 
 **Account-wide exclusion.** On the Scenarios page, the **Exclude specific contacts** card ("Contacts matching these filters will be excluded from all automations") opens a contact filter. It stops every automation for matching contacts, helpers included, at every step. Keep it to one filter at most (contact status is Spam), and read the filter back before you save: a wrong filter such as "not in a folder" would switch off automation for most of the account.
 

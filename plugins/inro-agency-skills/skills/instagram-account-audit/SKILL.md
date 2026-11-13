@@ -12,7 +12,7 @@ Read a client's Inrō account end to end, change nothing, and leave three things
 2. an **audit** that says what is live, broken, stale, risky and missing,
 3. a **gap list** ranked down to the three quickest wins.
 
-**Requirements.** The Inrō connector (`https://api.inro.social/mcp`, OAuth) authorized on the client's account. The account must be on Pro or Trial, and one connection reaches one account. For many clients, use the Inrō partner connector instead (`https://api.inro.social/partner/mcp`, your partner token in an `Authorization: Bearer` header). It reaches every client account in your partner workspace, every call must name the client by Instagram username or account id, and each client still needs Pro or Trial. Without a connector nothing can be read: you can still walk through `references/gap-checks.md` by hand in the Inrō app.
+**Requirements.** The Inrō connector (`https://api.inro.social/mcp`, OAuth) authorized on the client's account. The account must be on Pro (monthly or annual), a free trial, or a lifetime plan. Free accounts, and accounts whose plan lapsed after a failed payment, are refused. One connection reaches one account. For many clients, use the Inrō partner connector instead (`https://api.inro.social/partner/mcp`, your partner token in an `Authorization: Bearer` header). It reaches every client account in your partner workspace, every call must name the client by Instagram username or account id, and each client still needs one of those plans. Without a connector nothing can be read: you can still walk through `references/gap-checks.md` by hand in the Inrō app.
 
 This skill only reads. Fixing what it finds belongs to other skills (section 9).
 
@@ -43,8 +43,8 @@ Cheapest and safest first. Each step tells you what to look for in the next. Par
 | 1. Account | `get_organization_info` | connection, restrictions, plan and billing period, opt-out, publishing |
 | 2. Health | `executions` → `health` (last 30 days) | runs by status, failure rate, the automations failing most and why, and whether a broken connection or the contact activation limit is stopping everything |
 | 3. Entry points | `icebreakers` → `list`, `persistent_menu` → `get`, `settings` → `get_optout` | what people can tap to start a conversation, and whether anything answers |
-| 4. AI agent | `agent` → `get` | activation rules, About, Goal, rules, knowledge, intent actions, data collection, hand-off |
-| 5. Automations | `scenario_folders` → `list`; `scenarios` → `list`, then `get` on each; `show_scenario` on each active one; `scenarios` → `performance` on the busiest and the failing | triggers, steps, settings, the editor's own warnings, and which step breaks |
+| 4. AI agent | `agent` → `get` | activation rules, Profile, Goal, rules, knowledge, intent actions, data collection, hand-off |
+| 5. Automations | `scenario_folders` → `list`; `scenarios` → `list`, then `get` on the active ones that ran and the busiest others; `show_scenario` on those; `scenarios` → `performance` on the busiest and the failing | triggers, steps, settings, the editor's own warnings, and which step breaks |
 | 6. Campaigns | `campaigns` → `list`, `get`, `performance` | what was sent, paused or never sent |
 | 7. Contacts and data | `contacts` (`list`, `filter`), `folders`, `segments`, `contact_properties`, `conversion_links` | list size, recent activity, capture, segmentation, link clicks |
 | 8. Content coverage | `medias` → `list`, `stories` → `list`, `contacts` → `filter` by comment, story reply and story mention | which posts and stories draw engagement, and whether anything catches it |
@@ -55,7 +55,7 @@ Do not skip step 10. Half the value of an audit is knowing which building blocks
 
 ## 4. Counting and evidence rules
 
-- **Count with `per_page: 1`** and read `pagination.total_count`. Never page through records just to count them.
+- **Count with `per_page: 1`** and read `pagination.total_count`. Never page through records just to count them. On some accounts the connector refuses `comment` without `media_id`, `clicked_conversion_link` without `conversion_link_id`, and `referral_ad` without a date window ("too many contacts to search or filter this way"). Then count per post and per link, and say the account-wide figure was not available.
 - **Quote single-filter counts.** When you combine filters, check the result against each filter alone. A combined count larger than either part is wrong.
 - **Put a date on every number and a window on every rate** ("last 30 days"). `executions` and `performance` look back 90 days at most.
 - **Check `updated_at`** before you conclude anything from something that looks half-built. It may have changed minutes ago.
@@ -72,7 +72,7 @@ Write it before anyone changes anything, as `<handle>-backup-<YYYY-MM-DD>.md`. I
 - every AI agent field, with a "restorable through the connector" yes or no column;
 - **a one-shot restore payload** for `agent_manage` → `update` that puts every editable agent field back in one call. Prose is not a backup;
 - every knowledge item verbatim, with its type and whether it is included in every reply. An uploaded document ("Text document", `item_type: file`) cannot be recreated through the connector, which only creates text and website items: record that as a restore limit;
-- intent actions, tracked properties, custom contact properties, folders, segments, conversion links, scenario folders, every scenario (triggers, full action tree, settings) and every campaign;
+- intent actions, tracked properties, custom contact properties, folders, segments, conversion links, scenario folders, every scenario read in full (triggers, full action tree, settings) plus an index of all the others (id, title, active, folder, last run), and every campaign;
 - a restore-limits section, a timestamp on every read, and a warning to re-read before relying on it.
 
 Format, payload example and restore limits: `references/writing-the-audit.md`.
@@ -97,7 +97,7 @@ Run every check in `references/gap-checks.md`. These are the ones that most ofte
 - Campaign drafts never sent, schedules in the past.
 
 **Risky**
-- Live scenarios with AI steps. The agent's About and rules apply to every AI reply, so editing the agent changes those flows the moment it is saved.
+- Live scenarios with AI steps. The agent's Profile and rules apply to every AI reply, so editing the agent changes those flows the moment it is saved.
 - Two active flows that can catch the same message or comment outside a **Priority folder**: both run.
 - High-volume triggers with no **Limit frequency per contact**.
 - Opt-out off while campaigns go out.
@@ -160,7 +160,7 @@ Checking numbers against your own notes is not enough. Read the client's live pr
 
 ## 9. Templates and next steps
 
-Where a ready-made flow fills a gap, call `search_templates` (type `Scenario` or `Campaign`) with the gap in plain words. Each result has a share page, `https://app.inro.social/public/scenarios/<id>` (campaigns: `/public/campaigns/<id>`), with a **Use this automation** button (campaigns: **Copy this campaign**) that imports an inactive, editable copy. Read its description first, check its plan line, and tell the client to replace the template's link with their own before switching it on. Suggest one template per gap at most. A starting list by gap is in `references/choosing-quick-wins.md`. To turn the gaps and quick wins into a build plan with an order, hand them to the `dm-funnel-planner` skill.
+Where a ready-made flow fills a gap, call `search_templates` (type `Scenario` or `Campaign`) with the gap in plain words. Each result has a share page, `https://app.inro.social/public/scenarios/<id>` (campaigns: `/public/campaigns/<id>`), with a **Use this automation** button (campaigns: **Copy this campaign**) that imports an inactive, editable copy. Read its description first, check its plan line, and tell the client to replace the template's link with their own before switching it on. Suggest one template per gap at most. `search_templates` does not return every valid template: if one you expect is missing, open its share page, and if the page shows the flow, the template is good to suggest. A starting list by gap is in `references/choosing-quick-wins.md`. To turn the gaps and quick wins into a build plan with an order, hand them to the `dm-funnel-planner` skill.
 
 Then hand over:
 

@@ -14,9 +14,9 @@ The thresholds below are defaults. If the agency wants a different bar, write it
 | `instagram_restrictions` | Account-wide restrictions Meta applies now, oldest first. Each has `kind` (`sending_blocked`: every DM; `links_blocked`: DMs with a link; `rate_limited`: every DM, usually for minutes), `first_seen_at`, Meta's `error_message` and a `help_url`. Inrō pauses the affected messages and resumes them on its own once the restriction lifts. |
 | `instagram_linked_at` | When Instagram was connected. A date later than last week's snapshot means someone reconnected during the week. |
 | `can_publish`, `missing_publish_scopes` | Whether Instagram's publishing permission is granted. Matters only for clients whose posts you publish or schedule. |
-| `subscription_tier` | `free`, `trial` or `pro`. The connector refuses free accounts. |
+| `subscription_tier` | `pro`, `annual`, `trial`, a lifetime tier such as `appsumo_4`, or `free`. A hint only: it can lag the real plan, and a brand-new partner account can read `free` while it works normally. A refused call, not the tier, says an account is off a plan the connector serves. |
 | `current_billing_period_end` | When the current period ends. On a Trial account, check in the app whether that is also the trial end. |
-| `max_contact_activations` | The activation allowance on capped plans. |
+| `max_contact_activations` | A monthly activation cap the account set for itself. `null` means it set none. |
 
 **Matching the partner dashboard's words.** If you are a partner, the dashboard card for each client shows one connection status. The fields above map to it like this, so your report uses the same words:
 
@@ -39,9 +39,11 @@ Params: `since` (ISO 8601, default 7 days ago, at most 90 days back), `until` (d
 | `failure_rate` | Share of runs that `failed` or `partially_completed`, from 0 to 1. |
 | `account.instagram_connected` | `false` stops every automation at once. Editing a flow will not help. |
 | `account.contact_activation_limit_reached` | `true` stops automations messaging new people until the period resets or the plan changes. |
-| `account.contact_activations_used`, `account.contact_activations_limit` | Usage this billing period. No cap on Pro unless the account set its own. |
+| `account.contact_activations_used`, `account.contact_activations_limit` | Usage this billing period, and the figure it is measured against. Whether that figure is a cap depends on the plan: see below. |
 | `top_failing` | Up to 5 automations ranked by failure rate, not volume: `type`, `id`, `title`, `executions`, `failed`, `failure_rate`, `top_reason_code`. |
 | `top_reason_codes` | The most common reasons runs ended other than completing, as `reason_code` and `count`. |
+
+**Activation limits by plan.** On Pro, including accounts billed through your partner plan, activations are billed by price bracket and never stop runs. There `contact_activations_limit` is the top of the current bracket (500, then 1,000, 1,500 and so on; on your partner plan, the bracket of all your accounts together) and moves up as usage grows, so 480 of 500 is not a warning. It is a real cap only if the account set `max_contact_activations`. Trial, annual and free plans have a fixed allowance. On a lifetime plan the limit is shared by every account on that plan while `contact_activations_used` is this account's share only; check the plan-wide figure in the app. Whatever the plan, `contact_activation_limit_reached: true` is the field that says runs are stopping.
 
 Then, for each automation in `top_failing`: `scenarios` → `performance` (or `campaigns` → `performance`) with `id` and the same window. Each step has `position`, `action_type`, `reached`, `failed` and `top_reason_codes`. The step with the most failures is the one to name. To see one failing run in full: `executions` → `list` with `scenario_id` (or `campaign_id`) and `status: "failed"`, then `executions` → `get` with `type` and `id`. A run's `status_message` is the plain-language reason to quote.
 
@@ -63,7 +65,7 @@ To check AI steps on one automation, `scenarios` → `get` returns its actions, 
 
 ## 4. Campaigns: `campaigns` → `list`
 
-`per_page: 10`, newest first. Fields: `title`, `status` (`draft`, `scheduled`, `running`, `completed`, `limited`, `canceled`), `sent_at`, `metrics` (`contacts`, `sent`, `opened`, `converted`, `failed`, `running`), `full_url`.
+`per_page: 10`, newest first. Fields: `title`, `status` (`draft`, `scheduled`, `running`, `completed`, `limited`, `canceled`), `sent_at`, `metrics` (`contacts`, `sent`, `opened`, `converted`, `failed`, `running`; `null` on drafts), `full_url`.
 
 ## 5. Background jobs: `batch_tasks` → `list`
 
@@ -102,10 +104,10 @@ The connector does not show the AI credit balance. Pro accounts are not metered.
 | Switched off | Fewer active automations than last week's snapshot, and the agency did not say why |
 | Campaign | `metrics.failed` above 0 on a campaign sent this week; `status: "limited"`; `metrics.running` above 0 more than 30 days after `sent_at` |
 | Batch task | `status: "failed"` or an `error_message` |
-| AI agent | `trigger_mode: "never_reply"` while the roster says the agent should answer; `setup_completed: false` on a client sold an AI agent; an "AI features disabled" warning on an active automation |
+| AI agent | `trigger_mode: "never_reply"`, or `"specific_messages"` with no intents in `trigger_intents.intents`, while the roster says the agent should answer; `setup_completed: false` on a client sold an AI agent; an "AI features disabled" warning on an active automation |
 | Publishing | `can_publish: false` or `missing_publish_scopes` not empty, for a client whose posts you publish; a scheduled or recent post with `publish_status` `ERROR` or `EXPIRED` |
 | Ice breakers | An ice breaker with no active automation |
-| Plan | Trial with `current_billing_period_end` inside 7 days; `contact_activations_used` at 80% or more of a non-null `contact_activations_limit` |
+| Plan | Trial with `current_billing_period_end` inside 7 days; `contact_activations_used` at 80% or more of `contact_activations_limit` where it is a real cap (a trial, annual or free plan, or an account with its own `max_contact_activations`). Skip it on Pro and on accounts billed through your partner plan, where the limit is a price bracket |
 
 ### Keep an eye on
 
@@ -139,7 +141,7 @@ Use these when a reason code helps. Codes not listed are rare; quote the run's `
 ## Data traps
 
 - **Cached 7-day counter.** `metrics.executions.last_7_days` on a scenario is refreshed when the automation runs or is opened in the app, at most once a minute. On an automation that has gone quiet it keeps an old number. Never quote it when it disagrees with `last_executed_at`. Use `health` and `performance` for the week.
-- **Three shapes of `metrics`:** `{}` when it never ran, partial with only `total`, or complete with `last_7_days`, `trend` and `total`.
+- **Three shapes of `metrics`:** `{}` when it never ran, partial with only `total`, or complete with `last_7_days`, `trend` and `total`. Campaign drafts return `metrics: null`.
 - **Paused is not failed.** `failure_rate` excludes paused runs. Report paused runs separately, as waiting to be re-run.
 - **Rolling window.** "Last 7 days" is counted back from the call, not Monday to Sunday.
 - **Cached for a minute.** `health` and `performance` cache their result for about a minute, so a number read right after a retry can predate it.

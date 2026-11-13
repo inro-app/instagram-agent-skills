@@ -8,7 +8,7 @@ license: MIT
 
 Take a client's Instagram account in Inrō from "connected" to "live and safe", or take over one that someone else built. This file is the procedure. The detail is in `references/`.
 
-**Requirements.** One client: the Inrō connector (`https://api.inro.social/mcp`, OAuth). One connection reaches one Instagram account, and that account must be on Pro or Trial. Many clients: the Inrō partner connector (`https://api.inro.social/partner/mcp`, your partner token in an `Authorization: Bearer` header). Every partner call names the client in its `organization` field (prefer the account id from `list_organizations`; a username that matches several accounts is refused), and each client still needs Pro or Trial. Without a connector you can still run the intake, write the plan and the client update, and follow the in-app steps by hand.
+**Requirements.** One client: the Inrō connector (`https://api.inro.social/mcp`, OAuth). One connection reaches one Instagram account, and that account must be on Pro (monthly or annual), a free trial, or a lifetime plan (free accounts are refused). Many clients: the Inrō partner connector (`https://api.inro.social/partner/mcp`, your partner token in an `Authorization: Bearer` header). Every partner call names the client in its `organization` field (prefer the account id from `list_organizations`; a username that matches several accounts is refused), and each client still needs one of those plans. Without a connector you can still run the intake, write the plan and the client update, and follow the in-app steps by hand.
 
 | File | What it holds | Read it when |
 |---|---|---|
@@ -47,14 +47,14 @@ Take a client's Instagram account in Inrō from "connected" to "live and safe", 
 | 4 | Plan | Baseline gaps plus the automations from `inbound-dm-playbook`, each with exact text | Plan for the user's OK |
 | 5 | Build the baseline | Section 5, `references/baseline.md` | Folders, helpers, settings, each read back |
 | 6 | Build the automations | `inbound-dm-playbook` and `dm-flow-builder`, all inactive | Scenarios, each read back |
-| 7 | In-app steps | What the connector can't set (section 8) | Done in the app, then read back |
+| 7 | In-app steps | What the connector can't set (`references/baseline.md`, B12) | Done in the app, then read back |
 | 8 | QA | `references/qa-and-go-live.md` | Pass or fix list |
 | 9 | Go live and watch | Switch on one at a time, check real runs | Confirmed behaviour |
 | 10 | Tell the client | `references/client-update.md` | Message ready to send |
 
 ## 1. Confirm and scope
 
-- Run safety rule 1. Stop if the tier is not Pro or Trial, the Instagram connection shows a login error, or there are restrictions. Tell the user what to fix first.
+- Run safety rule 1. Stop if a call is refused for the plan (`subscription_tier` is a hint only: it can lag the real plan), the Instagram connection shows a login error, or there are restrictions. Tell the user what to fix first.
 - Ask whether another DM automation tool is still connected to this Instagram account. Instagram lets one app control a conversation at a time, and two tools cause locked conversations. Help: https://help.inro.social/en/articles/10485960
 - Ask whether this is a new setup, a takeover, or a review of something live, and how the user wants to approve changes.
 
@@ -97,14 +97,14 @@ Defaults, unless there is a reason not to. Exact settings and build specs: `refe
 |---|---|---|
 | Contact folders | Human only, Team hold (24h), Needs a human, Collabs: requested, plus the temporary windows you need | Connector `folders_manage` |
 | Scenario folders | **Inbound DMs** (priority folder) for every automation that replies; **Helpers** (normal folder) for silent ones | Connector `scenario_folders_manage` |
-| Team hold | Two helper scenarios, section 6 | Connector, then exclusions in the app |
+| Team hold | Two helper scenarios, section 6 | Connector |
 | Human handover | A scenario with no triggers that the agent runs when someone asks for a person | Connector, wired in the agent |
 | AI agent guardrails | Section 7 | Connector `agent_manage`, or the app |
 | Opt-out | On, keywords checked against how the client's customers write, confirmation message | Connector `settings_manage` |
 | Ice breakers | Up to 4, each answered by a scenario | Connector `icebreakers_manage` |
 | Persistent menu | 5 entries or fewer, the opt-out entry included | Connector `persistent_menu_manage` |
 | Conversion links | One per destination, tracked, reused by every flow | Connector `conversion_links_manage` |
-| Exclusions, run limits, interrupts | Section 8 | Run limits and interrupts by connector; folder exclusions in the app |
+| Exclusions, run limits, interrupts | Section 8 | Connector `scenarios_manage` `update`; the account-wide exclusion card in the app |
 | Spam | Spam accounts go to the spam list from the inbox (**Move to spam**) | App, or `contacts_manage` |
 
 Two rules carry most of the design:
@@ -170,7 +170,7 @@ Keep the list of "what goes to a person" word for word the same in three places:
 - **Never use a permanent tag as an exclusion.** "Collabs: requested" as an exclusion would block that partner from every other flow forever. Exclude a temporary window folder instead, removed by a timer.
 - **A helper must never exclude the folder it manages.** Excluded folders are checked at every step, so the helper would stop itself.
 - **Human only goes on each scenario, not account-wide.** The account-wide exclusion also stops running helpers, so moving someone to Human only while on hold would leave them stuck in Team hold.
-- **Where to set them.** Run limits and interrupts: `scenarios_manage` `update` (`rate_limit_enabled`, `rate_limit_unit`, `rate_limit_value`, `interrupt_on_message`, `interrupt_on_reply`) or the editor. Excluded folders: **in the app only** (the connector reads them as `excluded_folder_ids` but can't set them). Steps for both screens: `references/baseline.md`, B12.
+- **Where to set them.** All three with `scenarios_manage` `update`, or in the editor. Run limits: `rate_limit_enabled`, `rate_limit_unit`, `rate_limit_value`. Interrupts: `interrupt_on_message`, `interrupt_on_reply`. Excluded folders: `scenarios_manage` `update` with `id` and the full `excluded_folder_ids` list, in a call of its own (it's ignored on `create` and alongside triggers or actions). The ids aren't checked: take them from `folders` list and read back with `scenarios` `get`. Or use **Exclude specific folders** in the app. Details and the editor screens: `references/baseline.md`, B12.
 
 ## 9. Engine facts that shape this design
 
@@ -197,8 +197,9 @@ Checked against the current product. If a live response disagrees, the live resp
 3. Helpers, inactive: Team hold timer first (the start needs its id), then the start, then Human handover.
 4. Conversion links, contact properties.
 5. The inbound automations (`inbound-dm-playbook`), inactive, each placed in Inbound DMs with `scenario_folder_id` and `scenario_folder_priority`, then the order set with `scenario_folders_manage` `reorder`.
-6. Agent guardrails (section 7), opt-out, ice breakers, menu.
-7. In-app steps: excluded folders on every scenario, the account-wide card if needed.
+6. Excluded folders on every scenario that needs them (section 8): one `scenarios_manage` `update` `{id, excluded_folder_ids: [...]}` per scenario, then read back.
+7. Agent guardrails (section 7), opt-out, ice breakers, menu.
+8. In-app steps: the account-wide card if needed.
 
 ## 11. After every write
 

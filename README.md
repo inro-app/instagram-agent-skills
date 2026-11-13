@@ -1,6 +1,6 @@
 # Inrō skills for agencies
 
-Claude skills for agencies that run Instagram DM automation for their clients with [Inrō](https://inro.social). They help you audit a client's account, plan and build the automations, set up the AI agent, report every month, and look after many clients at once.
+Claude skills for agencies that run Instagram DM automation for their clients with [Inrō](https://inro.social/?utm_source=agency-kit&utm_medium=referral&utm_campaign=agency-skills-repo). They help you audit a client's account, plan and build the automations, set up the AI agent, report every month, and look after many clients at once.
 
 Each skill is a set of instructions Claude follows step by step, with safety checks built in: it confirms which account it's working on, reads before it changes anything, shows you the plan, and waits for your OK before it writes.
 
@@ -32,7 +32,7 @@ Part of the Inrō Agency Automation Kit (templates, a free audit and the partner
 
 ## What you need
 
-- **An Inrō account for each client**, on Pro or a trial. [Sign up](https://app.inro.social) and connect the client's Instagram Business or Creator account.
+- **An Inrō account for each client**, on Pro, a trial or a lifetime plan (free accounts are refused). [Sign up](https://app.inro.social/users/sign_up?utm_source=agency-kit&utm_medium=referral&utm_campaign=agency-skills-repo) and connect the client's Instagram Business or Creator account.
 - **Claude** on claude.ai, the desktop app or Claude Code, with the Inrō connector added (below).
 - **For many clients at once** (the partner skills and the multi-client modes): an Inrō partner account and its partner token. See [the partner dashboard](https://help.inro.social/en/articles/17027622) and [the partner API and MCP](https://help.inro.social/en/articles/17027623).
 

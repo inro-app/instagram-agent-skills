@@ -15,9 +15,9 @@ Before you click:
    switch in the Instagram app first: Settings, Account type and tools,
    Switch to professional account.
 2. Use a computer, not your phone. The login windows work better there.
-3. Log in with Instagram (the simplest option), or with Facebook if your Instagram is run
-   through a Facebook Page. Approve every permission it asks for. Skipping one breaks
-   features later.
+3. Type your Instagram username, click Find Instagram account, then Authenticate with
+   Instagram. Approve every permission it asks for. Skipping one breaks features later.
+   If it says the account is already connected elsewhere, tell me before going further.
 4. This only connects your Instagram. It does not give you access to our Inrō
    workspace.
 
@@ -36,7 +36,7 @@ Save one per client, next to your other client notes. No token in it.
 ```
 Client:            [brand] / @[username] / account id [id]
 Created:           [date], route [A dashboard | B managed link CODE | C connector]
-Connected:         [date], status [Connected | Limited ...], tier [pro | trial]
+Connected:         [date], status [Connected | Limited ...], tier [pro | trial | lifetime tier]
 Publishing:        can_publish [yes | no], missing scopes [...]
 
 Already on the account

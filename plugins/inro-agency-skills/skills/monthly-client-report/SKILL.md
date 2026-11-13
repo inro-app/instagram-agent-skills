@@ -10,8 +10,8 @@ You turn one client's month into a short document the client will actually read:
 
 ## Requirements
 
-- **One client:** the Inrō connector at `https://api.inro.social/mcp` (OAuth), connected to that client's account. One Instagram account per connection, on Pro or Trial.
-- **Many clients:** the Inrō partner connector at `https://api.inro.social/partner/mcp`, with your partner token in an `Authorization: Bearer` header. Every call names the client in the `organization` field (account id or Instagram username). There is no default client. Each client account still needs Pro or Trial; accounts billed through your partner plan are covered by it.
+- **One client:** the Inrō connector at `https://api.inro.social/mcp` (OAuth), connected to that client's account. One Instagram account per connection, on Pro (monthly or annual), a free trial, or a lifetime plan. Free accounts, and accounts whose plan lapsed after a failed payment, are refused.
+- **Many clients:** the Inrō partner connector at `https://api.inro.social/partner/mcp`, with your partner token in an `Authorization: Bearer` header. Every call names the client in the `organization` field (account id or Instagram username). There is no default client. Each client account still needs one of those plans; accounts billed through your partner plan are covered by it.
 - **For the final file:** whatever document or PDF tool your Claude environment has. Without one, you get the report as Markdown or HTML to drop into your own template.
 - **Without a connector:** there is nothing to count. You can still paste numbers in and get the report laid out, and every figure is labelled as supplied by you.
 
@@ -22,7 +22,7 @@ Read tools used: `get_organization_info`, `get_contact_filter_types`, `contacts`
 ## Safety rules (always)
 
 1. **This skill only reads the client's account.** It never creates, edits, sends, tests, triggers, retries or deletes anything in Inrō. If the numbers point at something to fix, say so and hand it to the right skill (section 9) with the agency deciding.
-2. **Confirm the account before counting anything.** Call `get_organization_info` and say back the Instagram username, account name and `subscription_tier`. If it is not the client the agency named, stop.
+2. **Confirm the account before counting anything.** Call `get_organization_info` and say back the Instagram username, account name and `subscription_tier` (a hint only: it can lag the real plan). If it is not the client the agency named, stop.
 3. **Single-account connectors:** if more than one Inrō connector is installed, call `get_organization_info` on each, say which one is which, and use only the one the agency confirms. Never mix connectors in one report.
 4. **Partner connector:** call `list_organizations` first, pick the client, and use its **id** in `organization` on every call, reads included. A username can match more than one account, and then the call is refused rather than guessed.
 5. **One client per report.** Never put two clients' numbers in one document.
@@ -50,11 +50,11 @@ Exact calls, parameters and the wording each number gets in the report: `referen
 
 **Each automation's funnel.** `scenarios` → `list` (every page) for titles, `active`, `created_at`, `last_executed_at` and `full_url`. Then `scenarios` → `performance` with the same window, for each automation that ran in the month. Each step carries `reached`, and engagement counters `sent`, `read`, `clicked`, `replied`, `converted`. Campaigns work the same way: `campaigns` → `list`, then `campaigns` → `performance` for the ones sent in the month.
 
-**Contacts.** Call `get_contact_filter_types` first; the filter shapes come from there, not from memory. Count with `contacts` → `filter`, `per_page: 1`, and read `pagination.total_count`. One filter per count, so each number means one thing: new contacts (`first_interaction`), engaged contacts (`any_engagement`), link clickers (`clicked_conversion_link`, overall and per `conversion_link_id`), people who went through an automation (`scenario`) or received a campaign (`campaign`). Total audience is `contacts` → `list` with `per_page: 1`. Contact counts stop at 10,000: when `pagination.total_count_capped` is `true`, the figure is a floor, so write "more than 10,000" and never subtract it from anything.
+**Contacts.** Call `get_contact_filter_types` first; the filter shapes come from there, not from memory. Count with `contacts` → `filter`, `per_page: 1`, and read `pagination.total_count`. One filter per count, so each number means one thing: new contacts (`first_interaction`), engaged contacts (`any_engagement`), link clickers (`clicked_conversion_link` per `conversion_link_id` for the two or three main destinations; the overall count can be refused on larger accounts), people who went through an automation (`scenario`) or received a campaign (`campaign`). Total audience is `contacts` → `list` with `per_page: 1`. Contact counts stop at 10,000: when `pagination.total_count_capped` is `true`, the figure is a floor, so write "more than 10,000" and never subtract it from anything.
 
 **Data captured.** Emails, phone numbers and custom properties stored on contacts are totals to date (`email` / `phone` with `is_present`, `contact_property`). The month's change only exists by comparing with last month's snapshot. Say which one you are showing.
 
-**Posts and stories.** `medias` → `list`, `status: "published"`, newest first, until `posted_at` falls before the month. `insights` is filled only when `insights_status` is `fresh`. On `refreshing`, wait a minute and read again; on `unavailable`, Instagram does not report on that post, so leave it out of the totals and say how many were left out. `stories` → `list` for stories; story insights are often empty, so tell the agency rather than dropping the section silently.
+**Posts and stories.** `medias` → `list`, `status: "published"`, newest first, until `posted_at` falls before the month. Entries with no `posted_at` can come first: skip them. `insights` is filled only when `insights_status` is `fresh`. On `refreshing`, wait a minute and read again; on `unavailable`, Instagram does not report on that post, so leave it out of the totals and say how many were left out. `stories` → `list` for stories. It has no date filter and is not in date order, so filter by `posted_at` yourself. Story insights are often empty, so tell the agency rather than dropping the section silently.
 
 **What shipped, from the account itself.** Anything with `created_at` inside the month is a candidate for "what we shipped": automations, campaigns, conversion links, AI agent knowledge items and AI agent actions. Folders and contact properties carry no creation date in the connector, so ask about those.
 
@@ -124,7 +124,7 @@ Full rules with examples: `references/writing-rules.md`. The ones that matter mo
 
 ## 8. What this costs
 
-Around 30 to 60 small tool calls for one client, most of them counts with `per_page: 1`. The `medias` list is the heaviest response. Budget ten to fifteen minutes. Run it on request, with a person reading the result before it goes to a client.
+Around 30 to 60 small tool calls for one client, most of them counts with `per_page: 1`. The `medias` list is the heaviest response (about 270,000 characters per 100 posts): page it at 20 to 30, or have a helper extract the month's posts. Budget ten to fifteen minutes. Run it on request, with a person reading the result before it goes to a client.
 
 ## 9. Related skills
 

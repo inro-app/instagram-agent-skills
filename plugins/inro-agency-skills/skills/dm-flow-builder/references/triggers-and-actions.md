@@ -55,7 +55,7 @@ Children of a branching action go under one of its branch labels (`parent_branch
 |---|---|---|---|
 | `conversion_link` | Tracked link card | `option_clicked` (fires even after the timeout), `option_expired` | Inline `conversion_link: { title, url, button_title, subtitle }` or `{ id }`. `expire_duration`, `expire_unit` |
 | `payment_link` | Stripe payment card | none | `payment_amount` (required), `payment_description` (80 characters). Pro, needs Stripe connected. Does not wait for payment |
-| `survey` | Survey in the DM | `option_filled`, `option_expired` | Reference `survey: { id }` or create one inline with `title`, `survey_type` (`single_choice` or `questions`), options and questions |
+| `survey` | Survey in the DM | `option_filled`, `option_expired` (`questions` type) | Reference `survey: { id }` or create one inline with `title`, `survey_type`, `survey_options` (`title`, `payload`, optional `folder_id`) and `survey_questions` (`title`). `single_choice` (default) sends the survey and continues; `questions` waits for the answers and branches. The connector has no survey tool, so delete a survey in the app |
 
 Calendly, Shopify and other integration steps exist in the app when the integration is connected. Check in the app.
 
@@ -64,7 +64,7 @@ Calendly, Shopify and other integration steps exist in the app when the integrat
 | `action_type` | Does | Branches | Notes |
 |---|---|---|---|
 | `ask_question` | Question with quick-reply buttons | `option_0`, `option_1`, ... per option, `option_replied` (any other reply), `option_expired` | `ask_question_options`, `contact_property` to save the answer, `ai_detection` (the **AI Agent Question** in the app, Pro), `autoreply_enabled` + `incorrect_label` + `max_attempts` + `max_attempt_mode` (`expire`/`continue`), `disable_quick_replies` |
-| `collect_property` | Asks for an email, phone or property and saves it | `option_property`, `option_expired` | `contact_property` (`email`, `phone` or a custom property key), retries as above, `skip_ai_detection`. **Ask for information** in the app |
+| `collect_property` | Asks for an email, phone or property and saves it | `option_property`, `option_expired` | `contact_property` (`email`, `phone` or a custom property key), retries as above. Reads the reply with AI when the account has AI features, which uses AI credits; `skip_ai_detection: true` saves the reply as typed and costs nothing. **Ask for information** in the app |
 | `wait_for_reply` | Waits silently for the next message | `option_replied_0`, `option_replied_1`, ... (one per keyword branch), `option_replied` (any other reply), `option_expired` | `branches: [{ "keywords": [...] }]`, `expire_duration`, `expire_unit` (minutes, hours, days). Cannot save the reply |
 | `delay` | Waits | none | `delay_duration`, `delay_unit` |
 
@@ -91,7 +91,7 @@ Calendly, Shopify and other integration steps exist in the app when the integrat
 
 | `action_type` | Notes |
 |---|---|
-| `comment` | Public reply to the triggering comment. Text goes in `options.comment_variants` (one is picked at random, spintax and variables allowed). `comment_limiting` (progressive limiting on busy posts), `autowrite` (AI rewrite), `like_comment` |
+| `comment` | Public reply to the triggering comment. Text goes in `options.comment_variants` (one is picked at random, spintax and variables allowed). `comment_limiting` (**Avoid spam detection** in the app, on by default: skips some public replies on busy posts), `autowrite` (AI rewrite), `like_comment` |
 | `like_comment` | Likes the triggering comment |
 | `hide_comment` | Hides the triggering comment |
 
@@ -121,4 +121,11 @@ The AI steps' voice and knowledge are configured in `instagram-ai-agent-setup`. 
 | `interrupt_on_reply` | Stop pending runs when the contact writes (except at a step waiting for that reply) |
 | `scenario_folder_id`, `scenario_folder_priority` | Scenario folder, and priority inside a priority folder (1 = highest) |
 
-Per-scenario excluded folders are set in the app (**Exclude specific folders**).
+**Excluded folders** (`excluded_folder_ids`, a list of folder ids). Contacts in any of these folders don't start the scenario. `scenarios_manage` update accepts it, although it isn't in the tool's listed parameters yet:
+
+- Send the full list. It replaces the old one, and `[]` clears it.
+- Send it in an update with no `triggers` or `actions`. It is ignored alongside them, and on create, so create first, then update.
+- The ids aren't checked, so take them from `folders` list.
+- Read it back with `scenarios` get: `excluded_folder_ids` must show exactly the list you sent.
+
+Or set it in the app: **Exclude specific folders** on the scenario.

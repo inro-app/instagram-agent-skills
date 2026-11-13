@@ -1,12 +1,14 @@
 # Inrō templates to start from
 
-The gallery changes, so treat this list as a map and confirm with `search_templates` (type `Scenario` or `Campaign`, with a plain query such as "story replies link" or "collect emails"). A result gives the template's `id`, title, description, setup notes and share link.
+The gallery changes, so treat this list as a map and check it with `search_templates` (type `Scenario` or `Campaign`, with a plain query such as "story replies link" or "collect emails"). A result gives the template's `id`, title, description, setup notes and share link.
+
+Search returns a handful of close matches, and some valid templates are not in its index yet. A template search does not return is not a reason to drop it: open its share page, and if the page shows the flow, it imports normally, by **Use this automation** or by `template_id`. Drop it only if the share page does not load.
 
 Every template has a public share page. Open it to see the flow, then **Use this automation** copies it into the account that is signed in, switched off. Through the connector, `scenarios_manage` create with `template_id` does the same for a scenario, and `campaigns_manage` create with `template_id` for a campaign. Both are writes, so they belong to `dm-flow-builder` and need the user's OK.
 
-Before any copy goes live: replace the link in its link step with the client's own, set the keyword and the posts it watches, point every folder step at one of the client's folders, fill any alert email, and read every message. Templates ship with example copy.
+Before any copy goes live: replace the link in its link step with the client's own, set the keyword and the posts it watches, point every folder step at one of the client's folders, fill any alert email, and read every message. Templates ship with example copy. A copy also brings the contact folders its steps use: it reuses a client folder with the same name, or creates one.
 
-Plan notes: "Free" runs on any plan, "Pro" needs Pro or Trial, "AI credits" needs AI features on the account and uses credits.
+Plan notes: "Free" runs on any plan, "Pro" needs a paid plan (Pro, a trial or a lifetime plan) and does not run on the free plan, "AI credits" needs AI features on the account and uses credits.
 
 ## Automations (scenarios)
 

@@ -1,13 +1,14 @@
 # Templates for inbound DMs
 
-Every template here imports as an **inactive** copy. Share page: `https://app.inro.social/public/scenarios/<id>` (works logged out, with a **Use this automation** button). Connector: `scenarios_manage` `create` with `template_id: <id>`, for templates in the in-app library. A template that is not in the library yet: import it from its share page. Names are the ones in the in-app library; if a name has changed, the id still works.
+Every template here imports as an **inactive** copy. Connector: `scenarios_manage` `create` with `template_id: <id>` and, optionally, a `title`. This works for every id below, including the newest ones (36428 to 36438), which aren't in the template library yet, so `search_templates` doesn't return them. Share page: `https://app.inro.social/public/scenarios/<id>` (works logged out, with a **Use this automation** button), also for every id below. If a name has changed, the id still works.
 
 What happens on import:
 - Links are copied into the client's account as their own link records. Replace each URL.
 - Folders are matched by exact name in the client's account and created when missing. Use the folder names from `client-account-setup` (baseline B1) so they line up.
-- Alert emails arrive with no recipient. That shows as an issue until you add the client's address.
-- Ice breaker triggers point at ice breakers on the template's own profile. Create the client's ice breakers and point each trigger at the new payload.
-- Run limits and "Interrupt when you reply manually" come with the template (listed below). Excluded folders don't: add them in the app.
+- Alert emails arrive with no recipient. That shows as the issue "Email address is empty" until you add the client's address. Send the step's whole `options` with the address in it: options are replaced, not merged, so a partial update wipes the subject and body.
+- Ice breaker triggers point at ice breakers on the template's own profile, and show the issue "The ice breaker this trigger answers is no longer on your Instagram profile." Create the client's ice breakers and point each trigger at the new payload.
+- A trigger on the next post watches the first post published after the import, not after go-live. Import it close to that post, or switch the trigger to chosen posts.
+- Run limits and "Interrupt when you reply manually" come with the template (listed below). Excluded folders don't: set them after import with `scenarios_manage` `update` and `excluded_folder_ids`, or in the app (`SKILL.md`, section 8, step 5).
 
 ## The core inbound set
 
@@ -50,7 +51,7 @@ What happens on import:
 - **Starts from:** an ice breaker, "Which plan is right for me?"
 - **Steps:** "Happy to help. Which sounds most like you?" with three options (waits 20 hours; a typed reply that matches no option gets "Just tap one of the options below.") → each option sends its own link card → clicked: "Plans: clicked".
 - **Defaults:** no run limit; interrupt on manual reply on.
-- **Set after import:** the client's ice breaker (and a menu entry reusing its payload); the option labels and a link per option; a "Not sure" option that sends a call or trial link.
+- **Set after import:** the client's ice breaker (and a menu entry reusing its payload); the option labels and a link per option; the link behind the third option, "Not sure yet" (it ships with a call link).
 - **Needs:** nothing extra.
 
 ### 36436 · Answer price questions in DMs
@@ -58,7 +59,7 @@ What happens on import:
 - **Steps:** public reply under the comment ("Details are in your DMs" and variants) → DM with the price and two buttons, "Send the link" and "Chat on WhatsApp" (waits 6 hours) → each sends its link card → clicked: "Prices: clicked"; one reminder on the first link.
 - **Defaults:** once per contact; interrupt on manual reply on.
 - **Set after import:** the price line (the template's example price is a placeholder), both URLs, which posts to watch.
-- **For DM price questions:** copy it, delete the public reply step ("Delete only this action"), and give the copy a DM trigger with the price intent.
+- **For DM price questions:** import a second copy, delete the public reply step ("Delete only this action" in the app), and give the copy a DM trigger with the price intent. Through the connector: `scenarios_manage` `update` with the full actions list minus the reply step and `parent_id: null` on the DM step that followed it, and a triggers list with no ids holding the one DM trigger (that replaces the comment trigger).
 - **Needs:** nothing extra.
 
 ### 36428 · FAQ buttons in your DMs

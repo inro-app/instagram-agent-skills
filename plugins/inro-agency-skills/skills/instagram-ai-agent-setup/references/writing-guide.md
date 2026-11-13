@@ -2,7 +2,7 @@
 
 How to write an agent that sounds like the client and stays inside the lines. Field names and limits are in `fields-and-connector.md`.
 
-## About (500 characters)
+## Profile (connector field `about`, 500 characters)
 
 The one description that is in every prompt. Accounts set up by hand often leave it thin while the same facts sit in a knowledge item that may never be retrieved. Fill it.
 

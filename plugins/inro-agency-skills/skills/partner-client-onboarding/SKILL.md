@@ -8,7 +8,7 @@ license: MIT
 
 Bring a new client into your partner account, get their Instagram connected, and leave the account with a baseline and its first automations ready to switch on.
 
-**Requirements.** The partner dashboard at **app.inro.social/partners**, with an active partner plan and a payment method on file. Steps 3c and 5 to 8 also use the Inrō partner connector: `https://api.inro.social/partner/mcp`, your partner API token in an `Authorization: Bearer` header, Authentication set to "None", and every call names the client by account id or Instagram username. Accounts you create under your partner plan are on Pro through that plan. **Without the partner connector:** Steps 1 to 4 work in the dashboard alone, and you can do Steps 5 to 8 with the single-account Inrō connector on that client's account (`https://api.inro.social/mcp`, OAuth, one account per connection).
+**Requirements.** The partner dashboard at **app.inro.social/partners**, with an active partner plan, and a payment method on file unless your plan is a lifetime agency plan (for example from AppSumo). No partner dashboard yet? It comes with the Inrō Agency Partner Program or a lifetime agency plan: see [The Inrō Agency Partner Program](https://help.inro.social/en/articles/15632327). Steps 3c and 5 to 8 also use the Inrō partner connector: `https://api.inro.social/partner/mcp`, your partner API token in an `Authorization: Bearer` header, Authentication set to "None", and every call names the client by account id or Instagram username. Accounts you create under your partner plan are served by it: on a subscription they count as Pro, and on a lifetime agency plan they show its tier (for example `appsumo_4`). **Without the partner connector:** Steps 1 to 4 work in the dashboard alone, and you can do Steps 5 to 8 with the single-account Inrō connector on that client's account (`https://api.inro.social/mcp`, OAuth, one account per connection).
 
 Help center: [The Partner Dashboard](https://help.inro.social/en/articles/17027622), [Partner API & MCP](https://help.inro.social/en/articles/17027623), [The Inrō Agency Partner Program](https://help.inro.social/en/articles/15632327), [How to Connect Your Instagram Account](https://help.inro.social/en/articles/9424565).
 
@@ -28,12 +28,12 @@ The partner token reaches every client account you manage. Never paste it into a
 
 ## Step 1. Check your partner account is ready (dashboard)
 
-- **Plan.** Without an active partner plan you see "Start your partner plan" and cannot manage accounts. **Billing** shows your plan and when it renews.
-- **Payment method.** Without one, a "No payment method" notice sits in the sidebar with **Add a payment method**. You need it to create accounts and managed links. Accounts you already have keep running.
+- **Plan.** Without an active partner plan you see "Start your partner plan" and cannot manage accounts. **Billing** shows your plan and when it renews, or on a lifetime plan how many of its accounts are in use.
+- **Payment method.** Without one, a "No payment method" notice sits in the sidebar with **Add a payment method**. On a subscription you need it to create accounts and managed links. A lifetime agency plan needs no card; it has a fixed number of accounts instead, shown in **Billing**. Accounts you already have keep running.
 - **Logo.** In **Settings**, your logo replaces the Inrō logo on the signup and onboarding pages opened from your partner links. Set it before the first client sees the connect page.
 - **Team** (optional). Invite colleagues by email so they work in the partner workspace without sharing your login.
 
-On the connector there is no call that reads your plan. `create_organization` refuses with a plain message if there is no active plan, no payment method, or, on a plan that covers a fixed number of accounts, no free account left. Fix it in **Billing** and try again.
+On the connector there is no call that reads your plan. `create_organization` refuses with a plain message if there is no active plan, no payment method, or, on a plan that covers a fixed number of accounts, no free account left. Fix the first two in **Billing** and try again. For the third, delete an account you no longer need, or upgrade the plan where you bought it.
 
 ## Step 2. Pick how the account is created
 
@@ -67,15 +67,15 @@ A link's type cannot be changed after it is created. Make a new link for the oth
 
 1. `list_organizations`. Check the client is not already there (same name, or an earlier attempt that never connected). Reuse an unconnected one rather than creating a second.
 2. Agree the name with the user and get their OK (Rule 3).
-3. `create_organization` with `name` only. It also accepts `partner_link_code` (the code in a managed link's address, after `/p/`) to attribute the account to that link and copy its template, and `template_id` (an automation in one of your accounts) to copy it in. Both copies are switched on, so leave them out unless the user asked for them (Rule 2).
-4. The response has the account `id`, `instagram_connected: false` and an `instagram_connect_url`. Write down the id. Send the URL to the client (Step 4).
+3. `create_organization` with `name` only. It also accepts `partner_link_code` (the code in a managed link's address, after `/p/`) to attribute the account to that link and copy its template, and `template_id` (an automation in one of your accounts) to copy it in. Both copies are switched on, so leave them out unless the user asked for them (Rule 2). A `template_id` that is not one of your accounts' automations is skipped without an error, and the connect page of this route does not tell the client about the template.
+4. The response has the account `id`, `instagram_connected: false` and an `instagram_connect_url`. Write down the id: the account has no username until Instagram connects, so the id is the only way to name it. Its `subscription_tier` can read `free` at first; that is a lag in the field, and the account works anyway. Send the URL to the client (Step 4).
 
 ## Step 4. The client connects Instagram
 
 Send the client the link from Step 3 with the short checklist in `references/client-messages.md`. What they need to know:
 
 - They need an Instagram **Business or Creator** account. A personal account cannot connect.
-- Use a desktop browser. Log in with Instagram (recommended) or with Facebook if their account runs through a Facebook Page, and approve every permission asked for.
+- Use a desktop browser. On the page, type their Instagram username and click **Find Instagram account**, then **Authenticate with Instagram** and approve every permission. If the page says the account is already connected to another Inrō account (their own, or a previous agency's), stop and sort that out first.
 - Connecting does not give them access to your Inrō account.
 - On a managed link, finish within about an hour, or open the link again.
 
@@ -89,7 +89,7 @@ Connecting is a sign-in only the account owner can do. You cannot finish it for 
 Then call `get_organization_info` with `organization: <id>` and say back:
 
 - the username, and confirm with the user it is the client's real handle;
-- `subscription_tier` (pro or trial);
+- `subscription_tier` (on a subscription `pro`, on a lifetime plan its tier, for example `appsumo_4`; a brand-new account can still read `free` while it works);
 - the connection state: `login_error_data` empty, any `instagram_restrictions`;
 - `can_publish` and `missing_publish_scopes`, only if you will publish posts for them.
 
@@ -112,7 +112,7 @@ If a template was copied in and is on, show it with `show_scenario`, tell the us
 ## Step 7. First automations, switched off
 
 1. Agree two or three starting automations with the user. `dm-funnel-planner` helps pick them; `inbound-dm-playbook` covers the inbound basics.
-2. Build each one switched off: from a gallery template (`search_templates`, then `scenarios_manage` `create` with `template_id` and a title; the copy starts off) or with `dm-flow-builder`. Replace every example link and name in a template with the client's own.
+2. Build each one switched off: from a gallery template (`search_templates`, then `scenarios_manage` `create` with `template_id` and a title; the copy starts off) or with `dm-flow-builder`. Replace every example link and name in a template with the client's own. A template copy can also add the contact folders its steps use, and can show an `issue` warning (such as an empty alert email) until the client's values are in. If search does not return a template you expect, open its share page: if it shows the flow, the id copies normally.
 3. Show each with `show_scenario`. Switch one on (`scenarios_manage` `update`, `active: true`) only when the user says so for that automation.
 4. AI agent: `instagram-ai-agent-setup`. The full first-week setup checklist: `client-account-setup`.
 
@@ -124,11 +124,10 @@ If a template was copied in and is on, show it with `show_scenario`, tell the us
 
 ## Cleaning up
 
-- **An account that never connected** can be deleted with `delete_organization` and the account id, after the user's OK. It works only while Instagram has never been connected. Removing one from the dashboard: check in the partner dashboard.
+- **An account with no Instagram connected** can be deleted with `delete_organization` and the account id, after the user's OK. It works only while no Instagram is connected (never connected, or disconnected since), deletes everything in the account, and cannot be undone. The partner dashboard has no delete button for accounts.
 - **A connected account** cannot be deleted through the partner connector. It is a live client account.
 - **Managed link visits** that never connected are removed automatically.
 
 ## Check in the partner dashboard or the app
 
 - Whether your client can also log in to their own account, and who can invite them (**Profile**, **Team members** inside that account): check in the app.
-- Removing a never-connected account from the dashboard: check in the partner dashboard.

@@ -15,7 +15,7 @@ Run every check. Report only the ones that are true, each with what you read, th
 ## Entry points
 
 - **[Broken]** An icebreaker whose `automations` array is empty: tapping it starts no flow. The agent may still answer it if its activation rules let it, which is worth saying.
-- **[Broken]** A persistent menu `postback` entry that no active scenario matches.
+- **[Broken]** A persistent menu `postback` entry that no active scenario matches. Skip the opt-out entry (`source: optout`, payload `INRO_OPTOUT`): Inrō handles it.
 - **[Missing]** No icebreakers on an account that receives DMs, when the same opening questions repeat in the sample.
 - **[Risky]** Opt-out off (`optout_options.active: false`) on an account that sends campaigns. People cannot unsubscribe by keyword.
 - **[Risky]** Opt-out on but `menu_message` blank (no opt-out entry in the menu) or `confirmation_message` blank (no confirmation sent). A choice, but say it.
@@ -23,7 +23,7 @@ Run every check. Report only the ones that are true, each with what you read, th
 ## AI agent
 
 Dead wiring:
-- **[Broken]** `trigger_mode: specific_messages` with no intents in `trigger_intents.intents`. The agent replies to no message. The app warns about this ("No intents added") but lets it save.
+- **[Broken]** `trigger_mode: specific_messages` with no intents in `trigger_intents.intents` (the field can also come back as `{}`). The agent replies to no message. The app warns about this ("No intents added") but lets it save.
 - **[Broken]** `trigger_mode: never_reply` while active scenarios contain AI steps (`agent_reply`, `agent_message`, `agent_comment`, `agent_handover`). Those steps send nothing.
 - **[Stale]** Intents listed under AI-detected intents while the mode is not Specific intents only. They do nothing.
 - **[Broken]** An agent action, `no_reply_scenario_id` or `request_human_scenario_id` pointing at a scenario that is off or deleted, a folder or link that no longer exists.
@@ -33,12 +33,12 @@ Dead wiring:
 - **[Risky]** `human_takeover_active: false`: the agent can keep answering on top of a team member. `human_takeover_pause: 1` is short for a person still mid-conversation.
 
 Configuration:
-- **[Missing]** About or Goal empty, or no rules at all.
-- **[Stale]** `context_migrated: false`: the agent still runs on the older fields. Nothing is broken, but the first person to open the AI Agent page triggers the move to About, Goal and rules. Back up first.
+- **[Missing]** Profile (`about`) or Goal empty, or no rules at all.
+- **[Stale]** `context_migrated: false`: the agent still runs on the older fields. Nothing is broken, but the first person to open the AI Agent page triggers the move to Profile, Goal and rules. Back up first.
 - **[Risky]** The same rule written in voice rules, instructions and a knowledge item at once, or two rules that contradict each other.
 - **[Risky]** A Goal that is a style note or a guardrail rather than an outcome ("be friendly" instead of "book a consultation").
 - **[Risky]** `message_length` shorter than the answers the client actually needs (10 words for questions that need 50).
-- **[Risky]** Live scenarios with AI steps. About and rules apply to every AI reply, so any agent edit changes those flows the moment it is saved. Name them.
+- **[Risky]** Live scenarios with AI steps. The Profile and rules apply to every AI reply, so any agent edit changes those flows the moment it is saved. Name them.
 
 Knowledge:
 - **[Risky]** Long items with `retrieval: false` ("Include this information in all Agent requests"). They go into every reply, which slows replies and costs more. A leftover item that repeats the Goal or the rules adds nothing.
@@ -48,23 +48,23 @@ Knowledge:
 
 Data collection:
 - **[Missing]** The goal is leads or bookings but neither email nor phone is tracked (`contact_properties` on the agent), or `built_in_property_access` is empty while the rules ask the agent to use the email.
-- **[Broken]** A custom property the rules ask the agent to collect that is not tracked (`agent_active: false` on the property, and not in the agent's `contact_properties`).
+- **[Broken]** A custom property the rules ask the agent to collect that is not tracked (not in the agent's `contact_properties` from `agent` → `get`).
 - **[Risky]** Single or multiple choice properties with placeholder choices ("Option 1"), or two properties that would catch the same answer.
 
 ## Automations
 
 Dead wiring:
 - **[Broken]** `show_scenario` returns `has_issues: true`. Read the flow and say which step.
-- **[Broken]** A comment trigger with `comment_keywords` and no keyword, or `ai_detected` with no `ai_intent`. A messages or story reply trigger with keywords as the filter and none written.
+- **[Broken]** A comment trigger with `comment_keywords` and no keyword, or `ai_detected` with no `ai_intent`. A messages or story reply trigger with keywords as the filter and none written. Before calling any trigger dead, run `executions` → `list` with `scenario_id`: a trigger on a selected post that was a draft when picked, or a scenario with no trigger at all (started from outside Inrō), can still have recent runs.
 - **[Broken]** In `performance`, a step where most runs stop. Read two failing runs with `executions` → `get` before naming the cause.
 - **[Broken]** `suspended: true`.
 - **[Broken]** A Meta Conversion event step with no event name, or an email alert step with no address. Imported templates often still have an empty alert email.
 - **[Broken]** A link step still pointing at a template's example page or a placeholder URL.
-- **[Risky]** `has_warnings: true`: a raw link in a message, a second DM straight after a comment reply with nothing that waits for the contact, adding contacts to a folder the scenario excludes.
+- **[Risky]** `warnings: true` with only `suggestion` severities: a raw link in a message, a second DM straight after a comment reply with nothing that waits for the contact, adding contacts to a folder the scenario excludes.
 
 Stale:
 - **[Stale]** A comment trigger on `next_post` whose post is weeks old, or `select_posts` covering only old posts.
-- **[Stale]** An active scenario with `last_executed_at` 30 or more days ago.
+- **[Stale]** An active scenario with `last_executed_at` 30 or more days ago, unless it is attached to a scheduled post (`medias` → `list`, `status: scheduled`, `comment_to_dm`) and waiting for it.
 - **[Stale]** Several scenarios with the same name and different content, or test copies left active.
 
 Risky:

@@ -1,6 +1,6 @@
 ---
 name: instagram-ai-agent-setup
-description: "Set up, rebuild, fix and test a client's Inrō AI agent, the assistant that answers Instagram DMs. Covers the About and Goal fields, voice rules and instructions, message examples and length, the knowledge base, intent actions (send a link, add to a folder, start an automation, send a survey), contact data collection, handover to the team, guardrails for sensitive topics, activation rules, and a test pass before launch. Reads and backs up the current setup first, writes a spec for your approval, then applies it. Use when you say: set up the AI agent for this client, rebuild the agent, the AI is answering wrong, make the bot sound like the brand, add FAQs to the agent, stop the AI quoting prices, hand DMs to a human, test the agent before launch, why is the agent not replying."
+description: "Set up, rebuild, fix and test a client's Inrō AI agent, the assistant that answers Instagram DMs. Covers the Profile and Goal fields, voice rules and instructions, message examples and length, the knowledge base, intent actions (send a link, add to a folder, start an automation, send a survey), contact data collection, handover to the team, guardrails for sensitive topics, activation rules, and a test pass before launch. Reads and backs up the current setup first, writes a spec for your approval, then applies it. Use when you say: set up the AI agent for this client, rebuild the agent, the AI is answering wrong, make the bot sound like the brand, add FAQs to the agent, stop the AI quoting prices, hand DMs to a human, test the agent before launch, why is the agent not replying."
 license: MIT
 ---
 
@@ -8,7 +8,7 @@ license: MIT
 
 Configure a client's Inrō AI agent so it answers DMs in the client's voice, says only what is true, hands off to a person when it should, and is tested before a real follower talks to it.
 
-**Requirements.** One client: the Inrō connector (`https://api.inro.social/mcp`, OAuth), connected to that client's account, which must be on Pro or Trial. One connection reaches one account. Many clients: the Inrō partner connector (`https://api.inro.social/partner/mcp`, your partner token in an `Authorization: Bearer` header). Every request names the client by Instagram username or account id, and each client still needs Pro or Trial. Without a connector you can still use this skill to draft the full agent spec and the test script, then type them into the app by hand.
+**Requirements.** One client: the Inrō connector (`https://api.inro.social/mcp`, OAuth), connected to that client's account, which must be on Pro (monthly or annual), a free trial, or a lifetime plan (free accounts are refused). One connection reaches one account. Many clients: the Inrō partner connector (`https://api.inro.social/partner/mcp`, your partner token in an `Authorization: Bearer` header). Every request names the client in its `organization` field (prefer the account id from `list_organizations`; a username that matches several accounts is refused), and each client still needs one of those plans. Without a connector you can still use this skill to draft the full agent spec and the test script, then type them into the app by hand.
 
 ## Ground rules for every run
 
@@ -17,7 +17,7 @@ Configure a client's Inrō AI agent so it answers DMs in the client's voice, say
 3. **Plan, then OK.** Show the full spec and the exact list of writes. Write nothing until the user approves. The agent is live config: a saved change reaches real conversations immediately.
 4. **Lists are replaced whole.** `rules`, `message_examples`, `trigger_intents.intents` and `folder_rules.folder_ids` are sent as the complete list. A partial `rules` list deletes every rule you left out. Always start from the list `agent` `get` returned.
 5. **Going live is its own approval.** Any change to the activation mode that lets the agent reply on its own is a separate yes from the user, given after the test pass.
-6. **Treat any scenario you connect to the agent as live.** The agent can start a connected scenario (from an intent action, Human intervention or the cannot-reply setting) as soon as you save. Build those scenarios with the `dm-flow-builder` skill, with no trigger of their own, and confirm what they send before you connect them.
+6. **Treat any scenario you connect to the agent as live once it is switched on.** The agent starts a connected scenario (from an intent action, Human intervention or the cannot-reply setting) as soon as you save. A switched-off scenario stops before its first step (run reason `scenario_not_active`), so connecting one while you build is safe, but nobody is told: switch it on before the agent goes live (Step 7). Build those scenarios with the `dm-flow-builder` skill, with no trigger of their own, and confirm what they send before you switch them on.
 7. **Never test on real contacts.** Use **Chat with Agent** in the app, or a test Instagram account you control.
 8. **No deletes without explicit approval**, item by item: knowledge items, intent actions, detected properties, rules.
 9. **One client at a time.** For the same agent change across many clients, use `partner-bulk-rollout`.
@@ -28,7 +28,7 @@ In the app, open **AI Agent** in the sidebar. The page has three groups of cards
 
 | Group | Card | What it holds |
 |---|---|---|
-| Behaviour and personality | **Voice and personality** | About, Message length, Auto-like positive messages, Message examples, Voice rules |
+| Behaviour and personality | **Voice and personality** | Profile (connector field `about`), Message length, Auto-like positive messages, Message examples, Voice rules |
 | | **Goal and instructions** | Goal, Instructions |
 | | **Activation rules** | When the agent replies, AI-detected intents, folder limits |
 | Capabilities and actions | **Actions and automations** | "When contact wants to..." intents and what to do |
@@ -41,14 +41,14 @@ The page header has **Message history**, a status chip that names the activation
 
 **What reaches each reply:**
 
-- **Always:** About, Instructions, Voice rules, Message examples, Message length.
+- **Always:** Profile, Instructions, Voice rules, Message examples, Message length.
 - **Goal:** only when the agent handles a conversation on its own. A task written in an automation (Hand over to AI Agent, AI Agent message) replaces the Goal for that conversation. AI comment replies do not use it.
 - **Knowledge items:** the most relevant pieces are pulled for each message. Nothing guarantees a given item is present, so never rely on knowledge alone for a rule.
 - **Post and story notes:** when the conversation started from a comment on a post, or a reply to a story, the notes saved on that post or story are added.
 
-**The fact that shapes every decision.** About, Instructions, Voice rules, examples and knowledge also drive every AI step in the client's automations (AI Agent auto-DM, AI Agent message, AI Agent auto-comment, Hand over to AI Agent). Changing them changes those too. If the client has live automations with AI steps, say so before you push, re-test them after, and watch their results for a few days.
+**The fact that shapes every decision.** Profile, Instructions, Voice rules, examples and knowledge also drive every AI step in the client's automations (AI Agent auto-DM, AI Agent message, AI Agent auto-comment, Hand over to AI Agent). Changing them changes those too. If the client has live automations with AI steps, say so before you push, re-test them after, and watch their results for a few days.
 
-**Older agents.** `agent` `get` returns `context_migrated`. If it is `false`, the agent still runs on the older fields (role, description, goals, audience type, chat instructions, style rules). Opening the agent in the app, or writing About, Goal or rules through the connector, converts those fields into About, Goal and rules automatically. The conversion can also add one knowledge item that is always included, holding text too long for a rule. So: back up first, make one small write, then re-read everything and clean up duplicates. Never write the legacy fields on a converted agent: they are ignored. Full field map in `references/fields-and-connector.md`.
+**Older agents.** `agent` `get` returns `context_migrated`. If it is `false`, the agent still runs on the older fields (role, description, goals, audience type, chat instructions, style rules). Opening the agent in the app, or writing `about`, `goal` or `rules` through the connector, converts those fields into Profile, Goal and rules automatically. The conversion can also add one knowledge item that is always included, holding text too long for a rule. So: back up first, make one small write, then re-read everything and clean up duplicates. Never write the legacy fields on a converted agent: they are ignored. Full field map in `references/fields-and-connector.md`.
 
 ## Step 0. Ask before starting (one message)
 
@@ -58,13 +58,13 @@ The page header has **Message history**, a status chip that names the activation
 4. One line each: what the agent should do, what it must never do, and who on the client's team takes over.
 5. How should it go live: only inside automations, only for some topics, or every DM?
 
-If there is a website but no samples of the client's own messages, read three to five pages (home, about, services or pricing, FAQ, contact) before drafting. Derive the voice from what the client actually writes, not from adjectives they use about themselves.
+If there is a website but no samples of the client's own messages, read three to five pages (home, about, services or pricing, FAQ, contact) before drafting. Derive the voice from what the client actually writes, not from adjectives they use about themselves. With no website and no samples, ask the client for their answers to the top questions and a few real replies before you draft: the agent may only state facts the client gave you.
 
 ## Step 1. Read and back up (read-only)
 
 Calls, in order: `get_organization_info`; `agent` with `get`; `agent` with `list_items` (page through all of them); `list_actions`; `list_contact_properties`. To see which automations use AI steps, list scenarios and open the relevant ones with `show_scenario`. For a full account backup, run the `instagram-account-audit` skill first.
 
-Write down: `trigger_mode`, `trigger_intents`, `folder_rules`, `about`, `goal`, `rules` (with ids), `message_examples`, `message_length`, `auto_like`, `no_reply_active` and `no_reply_scenario_id`, `human_takeover_active` and `human_takeover_pause`, `request_human_scenario_id`, `built_in_property_access`, `model`, `reasoning`, every knowledge item (type, status, `retrieval`), every action, every detected property. Save this as a dated backup file the user keeps. It is also the restore payload.
+Write down: `trigger_mode`, `trigger_intents`, `folder_rules`, `about`, `goal`, `rules` (with ids), `message_examples`, `message_length`, `auto_like`, `no_reply_active` and `no_reply_scenario_id`, `human_takeover_active` and `human_takeover_pause`, `request_human_scenario_id`, `built_in_property_access`, `common_intents`, `setup_completed`, `model`, `reasoning`, every knowledge item (type, status, `retrieval`), every action, every detected property. Save this as a dated backup file the user keeps. It is also the restore payload, with one exception: a scenario setting that reads `null` is restored with `""`, because the connector refuses `null`.
 
 Flag straight away:
 
@@ -88,8 +88,8 @@ Fill in `examples/agent-spec-template.md`, with a character count on every field
 
 | App label | Connector field | Limit | What goes in it |
 |---|---|---|---|
-| About | `about` | 500 characters | Who the client is, what they offer, who they talk to. First person. |
-| Goal | `goal` | 500 characters | What a conversation the agent handles alone should move toward. Neutral enough for a bare "hi". |
+| Profile | `about` | 500 characters (the connector does not enforce it, so count) | Who the client is, what they offer, who they talk to. First person. |
+| Goal | `goal` | 500 characters (not enforced by the connector either) | What a conversation the agent handles alone should move toward. Neutral enough for a bare "hi". |
 | Instructions | `rules`, kind `instruction` | 300 characters each, up to 50 | Hard rules and scripts: what it must or must not say or do. Followed everywhere, including automations and comment replies. |
 | Voice rules | `rules`, kind `voice` | 300 characters each, up to 50 | How it writes. One rule each. Nothing about content. |
 | Message examples | `message_examples` | No fixed cap; keep each to one or two lines | 10 to 20 real lines across different situations. |
@@ -121,13 +121,13 @@ Wire the safety net before you write rules that depend on it. Details and sample
 Write in this order and re-read after each step (`agent` `get`, `list_items`, `list_actions`).
 
 1. **Profile and rules:** one `agent_manage` `update` with `about`, `goal`, the full `rules` list (keep ids of rules you keep), `message_examples`, `message_length`, `auto_like`.
-2. **Knowledge:** `create_item` with `item_type: "text"` or `"url"` (`crawl_source_url: true` to also index linked pages). Check each reaches status `ready`. Text documents (.txt, .pdf, .doc, .docx) can only be uploaded in the app. Replace old items only after the new ones are ready, and only with approval for each delete.
+2. **Knowledge:** `create_item` with `item_type: "text"` or `"url"` (`crawl_source_url: true` to also index linked pages). Check each reaches status `ready`: short text items can stay in `processing` for more than 10 minutes, so re-check with `list_items` before you test. Text documents (.txt, .pdf, .doc, .docx) can only be uploaded in the app. Replace old items only after the new ones are ready, and only with approval for each delete.
 3. **Data collection:** `create_contact_property` with `field_name` (`email` or `phone`) or a custom `contact_property_id`.
-4. **Intent actions:** `create_action` with `trigger`, `target_type` (`ConversionLink`, `Folder`, `Scenario` or `Survey`) and `target_id`.
-5. **Safety settings:** `no_reply_active`, `no_reply_scenario_id`, `request_human_scenario_id`, `human_takeover_active`, `human_takeover_pause`, `folder_rules`.
+4. **Intent actions:** `create_action` with `trigger`, `target_type` (`ConversionLink`, `Folder`, `Scenario` or `Survey`) and `target_id`. The connector does not check that the target exists, so read it first (where to find each id: `references/fields-and-connector.md`).
+5. **Safety settings:** `no_reply_active`, `no_reply_scenario_id`, `request_human_scenario_id`, `human_takeover_active`, `human_takeover_pause`, `folder_rules`. To clear a scenario setting, send `""`, not `null`.
 6. **Activation mode last**, and only after Step 6 passes and the user says go.
 
-Two connector side effects: any `update` marks the setup as completed, so the client sees the agent page instead of the setup wizard (pass `setup_completed: false` to bring the wizard back). And the app's own first-time analysis, which drafts About, Goal and rules from the account, only runs when those fields are empty. If you want that draft as a starting point, open the two panels in the app before writing.
+Two connector side effects: any `update` marks the setup as completed, so the client sees the agent page instead of the setup wizard (pass `setup_completed: false` to bring the wizard back). And the app's own first-time analysis, which drafts Profile, Goal and rules from the account, only runs when those fields are empty. If you want that draft as a starting point, open the two panels in the app before writing.
 
 ## Step 6. Test pass
 
@@ -145,7 +145,9 @@ The test chat sends nothing to contacts and shows which actions and detected pro
 
 ## Step 7. Go live and the first week
 
-Pick the narrowest mode that does the job, with the user's yes:
+Both steps below are part of the go-live yes. First switch on every scenario the agent starts (the escalation scenario, any scenario an intent action runs) with `scenarios_manage` `update` `{id, active: true}`, and read each back. A switched-off one does nothing when the agent starts it.
+
+Then pick the narrowest mode that does the job:
 
 - **Automation only** (`automation_only`): the agent speaks only through automations you built, such as a Hand over to AI Agent step. Smallest reach.
 - **Specific intents only** (`specific_messages`): replies only when a DM matches one of your **AI-detected intents**. Once it matches, the agent keeps that thread until 24 hours pass without activity. Start with two or three intents.
@@ -173,14 +175,14 @@ For the first week, read the agent's conversations daily (inbox filter **Current
 | Task | Use |
 |---|---|
 | Read and back up the whole config | Connector (`agent` `get`, `list_items`, `list_actions`, `list_contact_properties`) |
-| About, Goal, rules, examples, length, auto-like | Either. Connector for a full rebuild from a spec; app for small edits |
+| Profile, Goal, rules, examples, length, auto-like | Either. Connector for a full rebuild from a spec; app for small edits |
 | Activation mode, intents, folder limits, knowledge access, human intervention | Either |
 | Manual text and website knowledge items | Either (`create_item`). Keep text items within the app's 5,000-character limit so they stay editable there |
 | Upload a .txt, .pdf, .doc or .docx | App only |
 | Intent actions and detected properties | Either |
 | Notes on a post or story | Either: the post's **AI Agent** tab ("Additional information for the AI Agent") or `medias_manage` / `stories_manage` with `agent_context` |
 | Test chat, Message history, Improve reply | App only |
-| First-time analysis that drafts the profile | App only |
+| First-time analysis that drafts Profile, Goal and rules | App only |
 | Model, reasoning and the account's own OpenAI key | App only: **Billing & usage**, **OpenAI API Key** card, shown only on plans that allow an own key. Read-only through the connector |
 | Include a text item in every reply | App, with the account's own OpenAI key. Leave `retrieval` true through the connector unless the user confirms that key is set |
 | Check a property's description and its **Accessible by AI agent** switch | App. The connector sets them but does not return them |

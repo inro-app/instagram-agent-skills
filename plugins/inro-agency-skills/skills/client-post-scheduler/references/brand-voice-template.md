@@ -60,4 +60,4 @@ Leave anything you don't know blank. Blank means "ask me" for the essentials (ma
 
 ## Asking the questions
 
-When a client has no file yet, ask the starred questions first, in one message, and offer to fill the rest from the client's last 10 to 20 posts. To do that, read their recent captions with `medias` `list` (`status: published`), and draft the voice, phrases, emoji habits and hashtags from what's there. Show your draft and let the agency correct it before saving.
+When a client has no file yet, ask the starred questions first, in one message, and offer to fill the rest from the client's last 10 to 20 posts. To do that, read their recent captions with `medias` `list` (`status: published`, `per_page: 10`; each post comes back with its insights, so the response is large: use only `caption`), and draft the voice, phrases, emoji habits and hashtags from what's there. Show your draft and let the agency correct it before saving.

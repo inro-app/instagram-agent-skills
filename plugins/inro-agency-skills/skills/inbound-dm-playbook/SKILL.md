@@ -8,7 +8,7 @@ license: MIT
 
 What every client account should do with the DMs that come in, in which order, and which Inrō template to start each piece from. This file is the design. Template details: `references/templates.md`. Ready-to-paste AI intents: `references/intent-library.md`. Per business type: `references/business-types.md`.
 
-**Requirements.** One client: the Inrō connector (`https://api.inro.social/mcp`, OAuth), one Instagram account per connection, on Pro or Trial. Many clients: the Inrō partner connector (`https://api.inro.social/partner/mcp`, partner token in an `Authorization: Bearer` header); name the client in the `organization` field of every call, and each client still needs Pro or Trial. AI-detected triggers and AI steps also need AI features and AI credits on the account. Without a connector you can still design the plan with this skill and import templates from their share pages in the app.
+**Requirements.** One client: the Inrō connector (`https://api.inro.social/mcp`, OAuth), one Instagram account per connection, on Pro (monthly or annual), a free trial, or a lifetime plan (free accounts are refused). Many clients: the Inrō partner connector (`https://api.inro.social/partner/mcp`, partner token in an `Authorization: Bearer` header); name the client in the `organization` field of every call, and each client still needs one of those plans. AI-detected triggers and AI steps also need AI features and AI credits on the account. Without a connector you can still design the plan with this skill and import templates from their share pages in the app.
 
 ## Safety rules
 
@@ -21,7 +21,7 @@ What every client account should do with the DMs that come in, in which order, a
 
 ## How this fits with other skills
 
-- `client-account-setup` owns the baseline this playbook sits on: the folder names, the Inbound DMs and Helpers scenario folders, the team hold, the Human handover scenario, agent guardrails, and the in-app steps for exclusions. Do that first, or check it exists.
+- `client-account-setup` owns the baseline this playbook sits on: the folder names, the Inbound DMs and Helpers scenario folders, the team hold, the Human handover scenario, agent guardrails, and the exclusions. Do that first, or check it exists.
 - `dm-flow-builder` builds or edits one flow step by step. This skill says which flows and in which order; hand each build to it.
 - `instagram-ai-agent-setup` writes the agent's knowledge, voice and rules. The AI front desk below answers from them.
 - `dm-funnel-planner` designs comment, story and ad funnels that end in a DM. This skill covers what happens when people write to the client.
@@ -106,7 +106,7 @@ Not a button reply, a complaint, a return or a collab pitch.
 
 ## 6. Exclusions, run limits and interrupts for these flows
 
-How to set them, and why each rule exists: `client-account-setup` (section 8 and baseline B12). Folder exclusions are set in the app.
+How to set them, and why each rule exists: `client-account-setup` (section 8 and baseline B12). Folder exclusions: `scenarios_manage` `update` with `excluded_folder_ids`, or **Exclude specific folders** in the app (section 8, step 5).
 
 | Flow | Excluded folders | Run limit | Interrupt when you reply manually |
 |---|---|---|---|
@@ -132,12 +132,12 @@ Same map, different emphasis. Full versions with ice breakers, menu and sensitiv
 
 ## 8. Importing a template
 
-1. Find it: `search_templates` (`type: "Scenario"`, a plain query like "collab requests"), or use the id from `references/templates.md`. Preview it on its share page, `https://app.inro.social/public/scenarios/<id>`.
-2. Import with the user's OK: `scenarios_manage` `create` with `template_id` (nothing else in that call). In the app: the share page's **Use this automation** button, or **New scenario**, then **or choose a template**. Both import into the account you're logged in to, so check the organisation switcher first. If a template isn't in the in-app library yet, import it from its share page instead of the connector.
+1. Find it: `search_templates` (`type: "Scenario"`, a plain query like "collab requests"), or use the id from `references/templates.md`. The newest templates (ids 36428 to 36438) aren't in the template library yet, so `search_templates` doesn't return them: use the id. Preview it on its share page, `https://app.inro.social/public/scenarios/<id>`.
+2. Import with the user's OK: `scenarios_manage` `create` with `template_id` and, optionally, the client-facing `title` (no triggers, actions or prompt in that call). This works for every id in `references/templates.md`, the newest ones included. In the app: the share page's **Use this automation** button, or **New scenario**, then **or choose a template** (the newest ones aren't listed there yet, so use their share page). Both import into the account you're logged in to, so check the organisation switcher first.
 3. The copy arrives inactive, with its own copies of the template's links, and its folders matched by exact name (created when the client has none with that name).
-4. Fix before anything else: every link URL, every alert email address (templates ship empty, which shows as an issue), ice breaker triggers (point at the client's payloads), keywords, the AI intent text, the message text in the client's voice, run limit and interrupts.
-5. Place it: `scenarios_manage` `update` with `scenario_folder_id` (Inbound DMs or Helpers) and `scenario_folder_priority`, then `scenario_folders_manage` `reorder` for the whole folder. Set excluded folders in the app.
-6. Read back (`scenarios` `get`, `show_scenario`): no warnings with severity `issue`, still inactive. Go-live follows `client-account-setup` (QA and go-live).
+4. Fix before anything else: every link URL, every alert email address (templates ship empty, which shows as an issue), ice breaker triggers (point at the client's payloads), keywords, the AI intent text, the message text in the client's voice, run limit and interrupts. When you change a step's options (an alert address), send the step's whole `options` from `get` with your change in it: options are replaced, not merged, so anything you leave out is wiped.
+5. Place it: `scenarios_manage` `update` with `scenario_folder_id` (Inbound DMs or Helpers) and `scenario_folder_priority`, then `scenario_folders_manage` `reorder` for the whole folder. Then the excluded folders (section 6): `scenarios_manage` `update` with `id` and the full `excluded_folder_ids` list, in a call of its own (it is ignored on `create` and in an update that also sends triggers or actions). Or **Exclude specific folders** in the app.
+6. Read back (`scenarios` `get`, `show_scenario`): no warnings with severity `issue`, still inactive, `excluded_folder_ids` exactly as intended. Read the folder order with `scenarios` `list` (`scenario_folder_id` as a string, `order_column: "scenario_folder_priority"`, `order_direction: "asc"`); `scenario_folders` `get` shows only the count. Go-live follows `client-account-setup` (QA and go-live).
 
 ## 9. One week after go-live
 

@@ -31,7 +31,7 @@ Per-client values, filled in by the user before the dry run:
 | 4 | 45678 | @client_four | New | Add ice breaker "What are your prices?" | **Live on approval** | Client has 2 ice breakers |
 | 5 | 56789 | @client_five | Blocked | None | - | No link given yet |
 
-Set aside before the dry run: @client_six (not connected), @client_seven (not on Pro or Trial).
+Set aside: @client_six (not connected, before the dry run), @client_seven (calls refused for its plan, found in the dry run).
 
 Approval line to ask for: "Approve rows 2 and 4 now, and tell me what to do on row 3?"
 

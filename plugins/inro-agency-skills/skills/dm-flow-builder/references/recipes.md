@@ -6,15 +6,15 @@ Ids in the examples (`4521`, `111`, `222`, `333`) are placeholders. Take real on
 
 ## 1. From a template
 
-1. `search_templates` with `type: "Scenario"` (or `"Campaign"`) and a plain query ("story replies link", "collect emails"). Pick one with the user. See `templates.md`.
-2. `scenarios_manage` create with `template_id` and a `title`. The copy arrives switched off.
+1. `search_templates` with `type: "Scenario"` (or `"Campaign"`) and a plain query ("story replies link", "collect emails"), or take the id from `templates.md`. The newest templates (ids 36428 to 36438) aren't in the template library yet, so `search_templates` doesn't return them, but they import by id through the connector and from their share page. Pick one with the user.
+2. `scenarios_manage` create with `template_id` and a `title` (no triggers, actions or prompt in that call). The copy arrives switched off.
 3. `scenarios` get on the new id and go through every step:
    - **Link steps**: the copy has its own link with the template's example URL. Read `options.conversion_link_id`, then `conversion_links_manage` update that id with the client's `url`, `title` and `button_title`.
    - **Trigger**: set the keyword and the posts. Update the trigger by its `id` so the other triggers are kept.
    - **Folder steps**: `options.folder_ids` must be the client's folders. Fix any that are missing or empty.
    - **Alert emails** (`send_email`): fill in the team address.
    - **Copy**: every message, in the client's voice.
-4. `scenarios_manage` update with the full actions list (each step's `id`, plus the fields you change), then `show_scenario`.
+4. `scenarios_manage` update with the full actions list (each step's `id`, plus the fields you change), then `show_scenario`. A step's `options` is replaced as a whole: when you change one option (the alert address), send that step's full `options` from `get` with your change in it, or the other options are wiped.
 
 The same template can be opened by the client on its public share page, where **Use this automation** copies it into their account, switched off.
 
@@ -39,6 +39,8 @@ The same template can be opened by the client on its public share page, where **
 - `question_type`: `button_template` (tap a button, lowest friction), `message` (plain DM, link sent when they reply), `ask_for_follow` (must follow first, verified), `collect_property` (email before the link).
 - `conversion_link`: `{ "url": ... }` builds a new card from the page's title and image; add `title`, `subtitle`, `button_title` or `image_url` to override; or `{ "id": 7 }` sends an existing link unchanged.
 - The other steps (public reply, the question, the follow-up, folder tagging, a pixel event) are copied from the account's most recent comment-to-DM automation, or default wording if there is none. So read them back: `medias` get on the post shows `comment_to_dm` with its scenario id, then `scenarios` get, and fix the copy with `scenarios_manage` update.
+- It always adds a folder step and, under it, a Meta pixel step (`meta_pixel`, not listed by `get_action_types`). If the account had none to copy, the folder step is empty (no warning) and the pixel step shows the issue "No event selected". Point the folder step at a client folder and pick the pixel event, or delete both (the pixel step hangs under the folder step).
+- It sets no run limit and leaves interrupt on manual reply off. Add `rate_limit_enabled: true`, `rate_limit_unit: "once"` and `interrupt_on_message: true` in a `scenarios_manage` update. Inrō names the scenario itself ("Comment to DM #5", or "Specific post(s) - GUIDE" after a later call), so rename it with `title` in the same update, and check the name again after any later `attach_comment_to_dm` call.
 - Calling it again on the same post updates that post's automation instead of adding a second one.
 - On a new post, pass the same object as `comment_to_dm` to `medias_manage` create, with `"active": false` inside it. The automation starts matching when the post goes live.
 
@@ -87,7 +89,7 @@ Why this shape: the public reply tells them to look; the button is the one DM In
 Variants:
 
 - **All posts**: `"post_type": "all_posts"`. **Chosen posts**: `"select_posts"` with `post_ids` (Inrō media ids). **The next post only**: `"next_post"`, which watches the first post published after the trigger is created.
-- **Email first**: replace `ask` with `collect_property` (`"contact_property": "email"`, a prompt in `content`), and hang the link on `option_property`. Hang a second copy of the link on `option_expired` if people who skip the email should still get it.
+- **Email first**: replace `ask` with `collect_property` (`"contact_property": "email"`, a prompt in `content`), and hang the link on `option_property`. A second copy of the link on `option_expired` reaches people who replied without giving an email; someone who never replied after the comment can't get a second DM. An inline copy is a second link record with its own clicks, so to count clicks in one place create the link first (`conversion_links_manage` create) and send it by `id` in both steps.
 - **Follow first**: `ask_for_follow`, link on `option_followed`.
 - **Tag-a-friend**: `"comment_type": "tag_someone"`.
 
@@ -99,6 +101,7 @@ Someone already wrote, so the conversation is open and several messages can foll
 {
   "title": "DM: price question to price list",
   "active": false,
+  "rate_limit_enabled": true, "rate_limit_unit": "days", "rate_limit_value": 1,
   "interrupt_on_message": true,
   "triggers": [
     { "trigger_type": "messages", "options": {
@@ -130,6 +133,7 @@ If the AI agent also answers DMs, decide which one handles prices. A running sce
   "title": "Story replies: LINK to timetable",
   "active": false,
   "rate_limit_enabled": true, "rate_limit_unit": "hours", "rate_limit_value": 24,
+  "interrupt_on_message": true,
   "triggers": [
     { "trigger_type": "story_reply", "options": {
       "story_filter": "any", "content_filter": "keywords",
@@ -185,10 +189,10 @@ A first message is often a real question. If people type instead of tapping, `op
 
 Ice breakers live on the Instagram profile: up to 4 questions shown when someone opens a chat for the first time. Changing them changes the live profile at once, so get the OK on the exact wording first.
 
-1. `icebreakers` list. Each one shows the automations a tap starts; an empty list means nothing answers it.
+1. `icebreakers` list. Each one shows the automations a tap starts; an empty list means nothing answers it. The list includes switched-off scenarios, so check that at least one is `active` before you tell the user it's answered.
 2. `icebreakers_manage` create with the `question`. The response returns its `payload`.
 3. A scenario with `{ "trigger_type": "icebreaker", "options": { "icebreaker_payload": "<payload>" } }` and the answer (a message plus a link card, or a short question). Switched off, tested, then switched on.
-4. To reword later, `icebreakers_manage` update with the same `payload`: the trigger keeps working. A trigger on `icebreaker_title` stops firing when the wording changes.
+4. To reword later, `icebreakers_manage` update with the same `payload`: the trigger keeps working. A trigger on `icebreaker_title` stops firing when the wording changes (it keeps matching only while the new wording still contains the old question), so switch it to the payload.
 
 Between steps 2 and 3, the new ice breaker shows on the profile with nothing behind it. Keep that gap short. In the app, the ice breakers card also offers ready-made ways to answer an unanswered one.
 
@@ -197,7 +201,7 @@ Between steps 2 and 3, the new ice breaker shows on the profile with nothing beh
 The menu inside every DM thread. Keep it to 5 entries or fewer; titles are cut at 30 characters. Changes are live on Instagram at once.
 
 - A link entry: `persistent_menu_manage` add with `"type": "web_url"`, `title`, `url`. It opens the page and starts no automation.
-- An automated entry: add with `"type": "postback"`, a `title`, and `payload` set to an existing ice breaker's payload, so the scenario that answers that ice breaker answers the menu entry too. An `icebreaker` trigger on a menu-only payload shows an issue.
+- An automated entry: add with `"type": "postback"`, a `title`, and `payload` set to an existing ice breaker's payload, so the scenario that answers that ice breaker answers the menu entry too. Nothing flags this reuse; it is the intended setup. An `icebreaker` trigger on a menu-only payload shows the issue "The ice breaker this trigger answers is no longer on your Instagram profile."
 - The opt-out entry is kept in step with the opt-out setting. Deleting it turns opt-out off. Leave it alone.
 
 ## 9. Follow-ups and chaining

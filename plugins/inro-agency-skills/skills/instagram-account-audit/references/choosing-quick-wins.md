@@ -114,7 +114,9 @@ Every quick win also appears in the full setup. A row nobody could act on, or on
 
 Find templates with `search_templates`, then open the share page before you suggest one. Use results that have a full description with "What it does", "What to set up" and a "Plan" line; skip entries with no description, which are older templates. **Use this automation** on a share page imports an inactive, editable copy. Replace the template's link and any example values before switching it on.
 
-Starting list (checked November 2026; names and the library change, so confirm with `search_templates`):
+`search_templates` returns a handful of close matches, and some valid templates are not in its index yet. A template it does not return is not a reason to drop it: open its share page, and if the page shows the flow, it imports normally (**Use this automation**, or `template_id` through the connector). Drop it only if the share page does not load.
+
+Starting list (checked November 2026; names and the library change, so check each share page before you suggest it):
 
 | Gap | Template | Share page |
 |---|---|---|

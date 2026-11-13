@@ -16,7 +16,7 @@ Read the scenario back with `scenarios` get, call `show_scenario`, and go throug
 - [ ] No raw URL in message text. Links go in link cards.
 - [ ] Every link card points at the client's URL, not a template or example URL.
 - [ ] Every folder step points at one of the client's folders.
-- [ ] Alert emails have a real address, and sit last in their branch.
+- [ ] Alert emails have a real address. In your own builds they sit last in their branch. Some templates put the alert mid-branch: leave it there, and if you remove it, give the step after it a new parent.
 - [ ] Timeouts are in hours, inside the 24-hour window.
 - [ ] Messages read well with variables filled in, and no two consecutive messages are identical.
 - [ ] AI steps: the agent is set up for this topic (`agent` get), and the account has AI features and credits.
@@ -26,7 +26,7 @@ Read the scenario back with `scenarios` get, call `show_scenario`, and go throug
 - [ ] `active` is false.
 - [ ] Run once (or once per period) is on for lead flows.
 - [ ] `interrupt_on_message` is on wherever a person may step in.
-- [ ] Customers and the team are excluded with per-scenario **Exclude specific folders** (set in the app). The account-wide **Exclude specific contacts** card is for spam only.
+- [ ] Customers and the team are excluded per scenario: `excluded_folder_ids` in `scenarios` get lists the right folders (set with `scenarios_manage` update or **Exclude specific folders** in the app). The account-wide **Exclude specific contacts** card is for spam only.
 - [ ] Opt-out is on for the account.
 - [ ] The name says the entry point and the outcome.
 
@@ -41,8 +41,11 @@ Common warnings and what they mean:
 | Meta may block messages containing links | Move the link into a link card |
 | This message might not be received | A second DM straight after a comment, with nothing waiting for the person. Put a button, question or wait step first |
 | Only one action can start the flow | Several root steps. Chain them |
-| Several actions share this branch, only one runs | Chain them one after the other |
-| The branch does not exist on the action above | Use one of the branch labels it lists |
+| 2 actions share this branch, but only one runs | Chain them one after the other |
+| This action never runs: the branch ... does not exist on the action above | Use one of the branch labels it lists |
+| Email address is empty | Add the team's address to the alert email (templates ship without one) |
+| No event selected (a Meta pixel step) | Pick the client's pixel event, or delete the step if the client has no pixel |
+| The ice breaker this trigger answers is no longer on your Instagram profile | Point the trigger at a payload from the client's `icebreakers` list |
 | The key is used by several actions | Make every `action_key` unique |
 | No link selected / the link no longer exists | Pick or recreate the link |
 | A keyword branch has no keywords | Add keywords or remove the branch |
@@ -103,7 +106,7 @@ Usual causes:
 ## Changing a flow safely
 
 - `scenarios` get first. Build the update from it.
-- Send the complete actions list: `{ "id": 123 }` keeps a step as it is; `{ "id": 124, "content": "New text" }` changes one field; a step without `id` is new and needs an `action_key` and a parent. Anything left out is deleted.
+- Send the complete actions list: `{ "id": 123 }` keeps a step as it is; `{ "id": 124, "content": "New text" }` changes one field. `options` counts as one field and is replaced whole: send the step's full `options` from `get` with your change in it, or the other options are wiped (an alert email loses its subject and body). A step without `id` is new and needs an `action_key` and a parent. Anything left out is deleted.
 - Triggers: include `id` on the triggers you change, and the others are kept. A triggers list with no ids replaces every trigger, and a webhook trigger then gets a new URL.
 - For big structural changes to a live flow, switch it off first (with the user's OK), change it, test, then switch it back on.
 - If updates keep failing on one scenario, build a corrected copy as a new scenario, switched off, test it, and switch the old one off on approval. Delete the old one only if the user explicitly asks.

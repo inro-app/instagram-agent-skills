@@ -25,7 +25,7 @@ What's wrong with it, in short:
 | 3 | "Watch the knee. If it drifts in, like this, your hip isn't holding it." | KNEE DRIFTS IN = HIP | Slow-motion of the knee caving in, arrow |
 | 4 | "That's what loads the knee on every step down." | | Cut back to the stairs |
 | 5 | "The fix starts with this one: side-lying leg lifts, slow, ten each side." | 10 EACH SIDE, SLOW | Physio on a mat, side view |
-| 6 | "We give every runner who walks in a sheet with the next four. Comment KNEE and I'll send it to you." | COMMENT "KNEE" | Physio holding up the sheet, smiling |
+| 6 | "We give every runner who walks in a sheet with the next four. Comment SHEET and I'll send it to you." | COMMENT "SHEET" | Physio holding up the sheet, smiling |
 
 What changed:
 - The opening names a moment she recognises and contradicts what she expects. She wants to know what it is, if not the knee.
@@ -35,17 +35,17 @@ What changed:
 
 ## Caption
 
-> Knee hurts on the way downstairs? Try the mirror test from the video before you change your shoes again.
+> Knee hurts on the way downstairs? Comment SHEET for the four exercises we give runners at their first visit.
 >
-> Comment KNEE and we'll DM you the five-exercise sheet we give runners at their first visit.
+> Try the mirror test from the video before you change your shoes again. We'll send the sheet to your DMs.
 >
 > #kneepain #runninginjury #physiotherapy
 
 ## What the automation needs
 
-- Keyword: KNEE (comments containing it, any case).
+- Keyword: SHEET (comments containing it, any case). Not KNEE: people write that word anyway ("my knee does this too"), and every one of them would get the DM.
 - First DM: a short line and a button, then the link card to the sheet.
-- Follow-up: one nudge a day later if the link wasn't tapped.
+- Follow-up: one nudge a few hours later if the link wasn't tapped (within the 24 hours after their last message, so it can still be delivered).
 - Folder: "Knee sheet", so the front desk can offer an assessment later.
 - A note on the post for the clinic's AI agent: what an assessment costs and how to book.
 

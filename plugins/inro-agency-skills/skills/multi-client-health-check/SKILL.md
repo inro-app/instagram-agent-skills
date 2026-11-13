@@ -11,8 +11,8 @@ Find what is broken on your clients' accounts before your clients do, once a wee
 ## Requirements
 
 - **Many clients (the natural fit):** the Inrō partner connector at `https://api.inro.social/partner/mcp`, with your partner token in an `Authorization: Bearer` header (token from the partner dashboard at app.inro.social/partners, **API & MCP**). One connector covers every client account in your partner workspace. Every call names the client in the `organization` field; there is no default client.
-- **Or one connector per client:** the Inrō connector at `https://api.inro.social/mcp` (OAuth), added once per client account. One account per connection.
-- **Each client account must be on Pro or Trial.** Accounts billed through your partner plan are covered by it. A client whose plan has lapsed is refused on its own while the others keep working, and that refusal is itself a finding.
+- **Or one connector per client:** the Inrō connector at `https://api.inro.social/mcp` (OAuth), added once per client account. One account per connection. Your Claude app allows one connector per URL, so give each one a unique dummy query string, for example `https://api.inro.social/mcp?client=acme`. The query string changes nothing else.
+- **Each client account must be on Pro (monthly or annual), a free trial, or a lifetime plan.** Free accounts, and accounts whose plan lapsed after a failed payment, are refused. Accounts billed through your partner plan are covered by it. A refused client is refused on its own while the others keep working, and that refusal is itself a finding. Judge by the refusal, not by `subscription_tier`: the tier can lag the real plan, and a brand-new partner account can read `free` and work normally.
 - **A roster file** listing the clients you expect to see. Template: `references/roster-template.md`. Without one, the check still runs on every account it can reach, and says that it could not tell whether anyone is missing.
 
 Tool names below are the ones the connector exposes. Your Claude app may show them with a prefix (the connector's name). Use whatever your connection lists.
@@ -78,10 +78,10 @@ One list across all clients, ranked by urgency, not grouped by client. Within a 
 - An automation failing a meaningful share of its runs, with the failing step named.
 - An active automation that never ran, or stopped running, when it used to.
 - Failed campaign sends, a campaign stuck in `limited`, or a failed batch task.
-- AI agent switched off (`never_reply`) when the roster says it should answer, or AI steps showing an "AI features disabled" warning.
+- AI agent switched off (`never_reply`, or "Specific intents only" with no intents) when the roster says it should answer, or AI steps showing an "AI features disabled" warning.
 - Publishing permission missing, or a scheduled post that failed, for clients whose posts you publish.
 - An ice breaker that starts nothing when tapped.
-- A trial ending, or activation usage near its limit, within the week.
+- A trial ending, or activation usage near a real cap, within the week (on Pro the activation limit is a price bracket, not a cap).
 
 **Keep an eye on** (needs last week to see):
 - Runs down by half or more against last week with no known reason.
@@ -107,7 +107,7 @@ Rules for each item in the list:
 - **Say what the thing does in plain words,** so a reader who has forgotten this client's setup still follows: "the flow that DMs the price list to people who comment PRICE", not just its title.
 - **Link every automation and campaign** with its `full_url`.
 - **Say what the numbers show and the next step.** "41 of 60 runs failed at step 3, the link card, mostly `action_error`. Open the failed runs in the scenario's History tab before changing anything."
-- **One item per issue.** A problem shared by two clients gets an item each, and each says the other is affected too, since it is probably one fix.
+- **One item per issue.** A problem shared by two clients gets an item each, and each says the other is affected too, since it is probably one fix. Several silent automations on one client are one item: list up to five with links, then "and N more".
 - **Plain language, not field names,** except a reason code in backticks when it helps the person who opens the account.
 - A client with nothing to report appears only in the at-a-glance table. A good-news line is allowed at the end, only when something really improved.
 
@@ -120,14 +120,14 @@ This skill does not fix anything inside the run. When the agency picks an item t
 - **Campaign sends paused:** `campaigns_manage` → `resend` with `scope` `disconnected` or `limited` previews first and sends nothing until called again with `confirm`. Show the preview and get a yes.
 - **A flow that is wrong:** `dm-flow-builder`. **The AI agent:** `instagram-ai-agent-setup`. **A deeper look at one account:** `instagram-account-audit`.
 
-The platform logs in the app (Profile menu, **Platform logs**, a Pro feature) show each run, each API and connector call, and the errors Instagram returned. They keep only a few days, so look soon after the check.
+The platform logs in the app (account menu, the account name bottom left, then **Platform logs**) show each run, each API and connector call, and the errors Instagram returned. They keep only a few days, so look soon after the check.
 
 ## 7. Data traps
 
 Details in `references/checks.md`. The ones that cause wrong reports:
 
 - **`metrics.executions.last_7_days` on a scenario is a cached counter,** refreshed when the automation runs or is opened in the app. On a flow that has gone quiet it keeps an old number and can disagree with `last_executed_at`. For week numbers, use `executions` → `health` and `performance`, which compute the window when asked. Use `last_executed_at` to decide whether a flow ran.
-- **`metrics` comes in three shapes:** `{}` on an automation that never ran, partial with only `total`, or complete. Handle all three.
+- **`metrics` comes in three shapes on automations:** `{}` on one that never ran, partial with only `total`, or complete. Campaign drafts return `metrics: null`. Handle all of them.
 - **Paused is not failed.** `limited`, `disconnected` and `restricted` runs are held, not lost. `failure_rate` counts only `failed` and `partially_completed`.
 - **The window is rolling:** 7 days back from the moment of the call, not Monday to Sunday. Say the dates in the headline.
 - **Health and performance numbers are cached for about a minute.** A number read just after a retry may predate it.

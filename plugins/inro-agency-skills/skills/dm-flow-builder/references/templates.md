@@ -1,12 +1,12 @@
 # Inrō templates to start from
 
-The gallery changes, so treat this list as a map and confirm with `search_templates` (type `Scenario` or `Campaign`, with a plain query such as "story replies link" or "collect emails"). A result gives the template's `id`, title, description, setup notes and share link.
+The gallery changes, so treat this list as a map and confirm with `search_templates` (type `Scenario` or `Campaign`, with a plain query such as "story replies link" or "collect emails"). A result gives the template's `id`, title, description, setup notes and share link. The newest templates (ids 36428 to 36438) aren't in the template library yet, so `search_templates` doesn't return them. They still import by the id in this list, through the connector and from their share page.
 
 Every template has a public share page. Open it to see the flow, then **Use this automation** copies it into the account that is signed in, switched off. Through the connector, `scenarios_manage` create with `template_id` does the same for a scenario, and `campaigns_manage` create with `template_id` for a campaign. Both are writes, so show the plan and get the user's OK first (`SKILL.md`, sections 4 and 5), and follow recipe 1 in `recipes.md`.
 
-Before any copy goes live: replace the link in its link step with the client's own, set the keyword and the posts it watches, point every folder step at one of the client's folders, fill any alert email, and read every message. Templates ship with example copy.
+Before any copy goes live: replace the link in its link step with the client's own, set the keyword and the posts it watches, point every folder step at one of the client's folders, fill any alert email, and read every message. Templates ship with example copy. A copy that watches the next post watches the first post published after the import, not after go-live: import it close to that post, or switch the trigger to chosen posts.
 
-Plan notes: "Free" runs on any plan, "Pro" needs Pro or Trial, "AI credits" needs AI features on the account and uses credits.
+Plan notes: "Free" runs on any plan, "Pro" needs a paid plan (Pro, a trial or a lifetime plan) and does not run on the free plan, "AI credits" needs AI features on the account and uses credits.
 
 ## Automations (scenarios)
 
@@ -25,10 +25,10 @@ Plan notes: "Free" runs on any plan, "Pro" needs Pro or Trial, "AI credits" need
 | FAQ buttons in your DMs | People opening your DMs (ice breakers) | Answers common questions from buttons | Free | https://app.inro.social/public/scenarios/36428 |
 | Recommend products with a quiz | Comments with your keyword | Asks two questions, then sends the right product | Free | https://app.inro.social/public/scenarios/36438 |
 | Get bookings from DMs | DMs with your keyword | Sends your booking link | Free | https://app.inro.social/public/scenarios/36437 |
-| Handle comments with AI | Comments on your posts | AI likes and replies to them | Pro and AI credits | https://app.inro.social/public/scenarios/36431 |
+| Handle comments with AI | Comments on the next post | AI likes and replies to them | Pro and AI credits | https://app.inro.social/public/scenarios/36431 |
 | Catch collab requests in DMs | Collab pitches in DMs | AI flags them and emails them to you | AI credits | https://app.inro.social/public/scenarios/36429 |
 | Qualify and book DM leads (AI) | DMs with your keyword | AI judges the answer to one question; hot leads get the booking link and alert your team | Pro and AI credits | https://app.inro.social/public/scenarios/6021 |
-| Handle DMs with AI | Questions in DMs or story replies | AI answers from the knowledge base; anything it cannot answer is filed for a person and emailed to your team | Pro and AI credits | https://app.inro.social/public/scenarios/6085 |
+| Handle DMs with AI | Questions in DMs (add a story-reply trigger with the same intent if you want those too) | AI answers from the knowledge base; anything it cannot answer is filed for a person and emailed to your team | Pro and AI credits | https://app.inro.social/public/scenarios/6085 |
 | Thank positive comments | Kind comments | Likes the comment and replies with a short thanks | Free | https://app.inro.social/public/scenarios/6082 |
 | Auto-like positive messages | Kind DMs | AI spots them and likes them | AI credits | https://app.inro.social/public/scenarios/6223 |
 | Like stories that mention you | Stories that mention the account | Likes the mention and files the person | Free | https://app.inro.social/public/scenarios/6086 |

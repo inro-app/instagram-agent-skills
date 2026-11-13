@@ -4,14 +4,14 @@ How to write the ask at the end of a client's reel so it starts a DM conversatio
 
 ## What happens after someone comments
 
-These are Instagram's rules, as Inrō's help center describes them (https://help.inro.social/en/articles/10456326 and https://help.inro.social/en/articles/15632060):
+These are Instagram's rules, as Inrō's help center describes them (https://help.inro.social/en/articles/10456326 and, for links, https://help.inro.social/en/articles/15632060):
 
 - The automation can reply to the comment in public and send the commenter **one** DM, called a private reply.
-- That first DM has to go out within **7 days** of the comment.
+- That first DM has to go out within **7 days** of the comment (24 hours for comments made during an Instagram Live).
 - Anything after the first DM needs the person to reply or tap first. A tap or a reply opens a 24-hour window in which the rest of the flow goes through.
 - People who don't follow the account get the DM in their message requests, and show as **Requested** in Inrō until they accept or reply.
 - A link sent as a tappable link card is the reliable way to deliver a link. Raw links typed into DM text may get throttled.
-- On very busy posts, Inrō's comment reply limiting (an option on the public reply step) skips some public replies to keep the account safe. The DMs are what matter.
+- On very busy posts, Inrō's **Avoid spam detection** setting on the **Reply to comment** step (on by default) skips some public replies to keep the account safe. The DMs are what matter.
 
 So the reel's promise and the first DM have to fit together: the first DM is a single message that should give, or unlock with one tap, what the reel promised.
 
@@ -21,7 +21,7 @@ So the reel's promise and the first DM have to fit together: the first DM is a s
 - **Easy to spell and to type on a phone.** Avoid words people misspell, and anything with hyphens or numbers.
 - **Not a word people write anyway.** "Yes", "love", "wow" or the product's name will fire on ordinary comments.
 - **One per reel.** Two keywords split the audience and confuse the automation setup.
-- **Case and accents don't matter** in Inrō's keyword matching. A comment that contains the keyword among other words also matches ("menu please!").
+- **Case and accents don't matter** in Inrō's keyword matching, and it matches whole words: a comment that contains the keyword among other words matches ("menu please!"), and a keyword of 4 or more letters also matches its plural ("menus"). So a product name like NOTEBOOK fires on "love this notebook" and "notebooks" too.
 - If people keep writing it differently, add the variant as a second keyword on the automation, or switch the automation to AI-detected intent ("asking for the menu") instead of a keyword.
 
 ## Writing the ask
@@ -72,7 +72,7 @@ In 2024 Instagram clarified that engaging people in comments and DMs to build re
 4. The DM wording sounds like the client, not like a template. The quick automation copies wording from the client's last comment-to-DM automation, so read it.
 5. Someone on the agency side has commented the keyword from an account the team controls and received the DM. Never test on real followers.
 6. If the reel is about an offer, the client's AI agent has a note on the post (price, dates, stock) so it can answer follow-up questions.
-7. If the post was already live with comments before the automation was switched on, check whether you want to run it on those comments. Switching a comment scenario on in Inrō offers **Catch up** for comments from the last 7 days.
+7. If the post was already live with comments before the automation was switched on, check whether you want to run it on those comments. Switching a comment scenario on in Inrō offers **Catch up** for comments from the last 7 days. Catch up is in the Inrō app only: an automation switched on through the connector doesn't catch up past comments.
 
 ## Common misses
 

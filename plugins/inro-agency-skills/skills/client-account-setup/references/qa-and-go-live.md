@@ -15,10 +15,10 @@ Run it on the confirmed account (`get_organization_info` first). On the partner 
 - [ ] Every alert email has the client's recipient address.
 - [ ] `excluded_folder_ids` includes Human only and Team hold (24h) on replying flows (section 8 of SKILL.md), and no helper excludes the folder it manages.
 - [ ] Run limit and interrupt flags as planned. "Interrupt when contact replies" (`interrupt_on_reply`) is off.
-- [ ] Folder and priority: replying flows in Inbound DMs in the planned order (`scenario_folders` `get`), silent ones in Helpers.
+- [ ] Folder and priority: replying flows in Inbound DMs in the planned order (read the order back with `scenarios` `list`: `scenario_folder_id` as a string, `order_column: "scenario_folder_priority"`, `order_direction: "asc"`; `scenario_folders` `get` shows only the count), silent ones in Helpers.
 
 **Account settings:**
-- [ ] `icebreakers` `list`: 4 or fewer, each with a non-empty `automations` list (or answered by the agent).
+- [ ] `icebreakers` `list`: 4 or fewer, each answered by the scenario you built (or by the agent). The list also shows switched-off scenarios, so after go-live check again that each entry has an `automations` entry with `active: true`.
 - [ ] `persistent_menu` `get`: 5 entries or fewer including opt-out, postbacks reuse ice breaker payloads, links have tracking parameters.
 - [ ] `settings` `get_optout`: on, keywords reviewed for false positives, confirmation message set.
 - [ ] `agent` `get`: mode, folder rule, human takeover and pause, request-human and cannot-reply scenarios as planned (SKILL.md section 7).

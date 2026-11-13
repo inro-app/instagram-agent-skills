@@ -11,12 +11,12 @@ Client: @example.bakery (account id, from get_organization_info) | connected as 
 Action: Draft for client sign-off, then schedule for Fri 20 Nov 2026, 07:30 Lisbon time (08:30 Paris, your zone)
 Type: Reel (Feed and Reels), cover from frame at 2.0 s
 Media: pastel-de-nata-v3.mp4, checked: vertical 9:16, 41 MB, MP4
-Caption (325 of 2,200 characters, 4 hashtags):
-The tray came out at 6:12 this morning. By 6:40 there were nine left.
+Caption (331 of 2,200 characters, 4 hashtags):
+The tray came out at 6:12 this morning. By 6:40 there were nine left. Comment MENU for this week's menu.
 
 Same custard recipe since we opened, new shell: thinner, darker, louder when you bite it.
 
-Comment MENU and we'll send you this week's menu in your DMs, so you know what's on before you walk over.
+We'll send the menu to your DMs, so you know what's on before you walk over.
 
 #lisbonbakery #pasteldenata #alfamafood #breakfastlisbon
 Alt text: Hands lifting a tray of dark-topped custard tarts out of a stone oven.

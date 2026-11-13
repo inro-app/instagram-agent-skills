@@ -11,7 +11,7 @@ Tool names below are the Inrō connector's tools as your assistant sees them. Re
 | Field | What it tells you |
 |---|---|
 | `username`, `name` | Which account this is. Say it back before anything else. |
-| `subscription_tier` | Pro or Trial is needed for the connector. Some steps (AI actions, A/B tests, live comments, webhooks, recurring schedules) are Pro only. |
+| `subscription_tier` | The plan, as a hint: it can lag the real plan. The connector serves Pro (`pro`, `annual`), a trial (`trial`) and lifetime plans (for example `appsumo_4`), and refuses every call on an account it does not serve. Some triggers are locked on some plans: they save, but never fire (live comments, webhooks and the website widget on the free plan; the widget and AI-detected intents on the oldest lifetime tier, `lifetime_1`). |
 | `login_error_data.login_error` | `true` means Instagram is disconnected and every automation is paused. First item of the plan: reconnect. |
 | `instagram_restrictions` | Anything here limits what can be sent. Mention it. |
 | `max_contact_activations` | A number here is a monthly cap on contacts the automations can reach. Big plays can hit it. |
@@ -19,11 +19,11 @@ Tool names below are the Inrō connector's tools as your assistant sees them. Re
 
 ## Posts, reels and comments
 
-`medias` with `action: list`, `status: published`, `per_page: 50`, newest first. For each post:
+`medias` with `action: list`, `status: published`, `per_page: 50`. Sort by `posted_at` yourself and skip entries with no `posted_at`: they can come first. For each post:
 
 - `posted_at`, `media_product_type` (feed or reels), `caption`, `permalink`.
 - `insights.comments`, `insights.reach`, `insights.views`, `insights.saved`, `insights.shares`. Insights are only present when `insights_status` is `fresh`. If it says `refreshing`, wait and read again; if `unavailable`, Instagram does not report on that post.
-- `like_count`.
+- `insights.likes`. Ignore `like_count`: it is often 0 on posts that have likes.
 - `comment_to_dm`: present when the post already has its own comment automation.
 
 Then count people, not comments:
@@ -34,7 +34,7 @@ Then count people, not comments:
   "per_page": 1 } }
 ```
 
-`pagination.total_count` is the number of people who commented in 30 days. Add `media_id` (the post's Instagram id, `instagram_id` on the media) to count one post.
+`pagination.total_count` is the number of people who commented in 30 days. Add `media_id` (the post's Instagram id, `instagram_id` on the media) to count one post. If the account-wide count is refused ("too many contacts to search or filter this way"), count each recent post with its `media_id` and add them up, labelled "people commenting on these N posts" (someone who commented on two posts counts twice).
 
 Traps:
 
@@ -73,7 +73,7 @@ To see what people ask, read a small sample: `contacts` filter on `message` sort
 
 ## Ads, mentions, lives
 
-- `referral_ad` in the window: people who arrived from a click-to-message ad. Above zero means the client runs ads that open DMs.
+- `referral_ad` in the window (always with a window; without one the count can be refused): people who arrived from a click-to-message ad. Above zero means the client runs ads that open DMs.
 - `media_mention`: people who tagged the client in a post.
 - Lives: there is no count of live comments in the contacts filters. Ask the client whether and how often they go live.
 
@@ -86,8 +86,8 @@ To see what people ask, read a small sample: `contacts` filter on `message` sort
 
 ## What is already built
 
-- `scenarios` list (`per_page: 100`), then `get` on each active one: trigger, steps, `rate_limit_*`, `interrupt_on_*`, folder.
-- `scenarios` performance on each active one, `since` 30 or 90 days back (90 is the maximum): how many runs reached and finished each step, and why the others stopped. This is how you find the step where people drop off.
+- `scenarios` list (`per_page: 100`), then `get` on each active one that ran in the window: trigger, steps, `rate_limit_*`, `interrupt_on_*`, folder. On an account with dozens of active scenarios, read the busiest in full and describe the rest from the `list` fields.
+- `scenarios` performance on the same ones, `since` 30 or 90 days back (90 is the maximum): how many runs reached and finished each step, and why the others stopped. This is how you find the step where people drop off.
 - Inactive scenarios: `get` and performance on any with a recent `last_executed_at` or real past volume.
 - `executions` health for the window: run totals by status, the failure rate, the automations failing most, and account-level blockers.
 - `campaigns` list: drafts, sent, scheduled.

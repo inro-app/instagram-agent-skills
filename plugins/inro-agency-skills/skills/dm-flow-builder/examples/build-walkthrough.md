@@ -56,7 +56,7 @@ User: yes.
 
 - `scenarios_manage` update with the id and `active: true`.
 
-> It's on. Inrō also offers **Catch up** for matching comments from the last 7 days. It shows 37 people. Do you want to send it to them?
+> It's on. People who commented TRIAL in the last 7 days, before it was on, didn't get it. In Inrō, the scenario's results offer **Catch up**: it shows how many people that is and can send it to them. It messages real people, so run it only if you want to reach that many. I can't run it from here.
 
 User: not now.
 

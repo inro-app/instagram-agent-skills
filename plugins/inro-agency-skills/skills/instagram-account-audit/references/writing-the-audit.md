@@ -21,9 +21,9 @@ Write it before anything changes. Sections, in order:
 5. **Restore payload.** One JSON block that puts every editable agent field back in a single `agent_manage` → `update` call (shape below).
 6. **Knowledge.** Every item verbatim in a fenced block, with `item_type`, `source_url`, whether it pulls in other pages of the site, `retrieval`, and `status`.
 7. **Agent actions** (trigger, target type, target id and the target's name) and **tracked properties**.
-8. **Contact properties**: title, slug, type, choices, `agent_active`, `auto_detect`.
+8. **Contact properties**: title, slug, `property_type`, choices, `auto_detect`, and whether the agent tracks it (from `agent` → `get`).
 9. **Folders** with their counts, **segments** with their filters, **conversion links** (title, URL, button).
-10. **Scenario folders** (type and order), then **every scenario**: title, id, active, folder and priority, settings (excluded folders, frequency limit, interrupt settings), triggers with options, and the full action tree as returned by `scenarios` → `get`.
+10. **Scenario folders** (type and order), then **every scenario you read in full**: title, id, active, folder and priority, settings (excluded folders, frequency limit, interrupt settings), triggers with options, and the full action tree as returned by `scenarios` → `get`. Then an **index of all the others** (id, title, active, folder, last run) from `scenarios` → `list`, marked as not backed up in full. On a large account a complete backup is not realistic: say so in the restore limits.
 11. **Campaigns**: status, schedule, audience rules, actions.
 12. **Restore limits** (below).
 

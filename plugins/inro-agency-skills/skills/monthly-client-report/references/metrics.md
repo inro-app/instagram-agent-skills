@@ -29,14 +29,14 @@ On the partner connector, add `organization` (the client's account id) to every 
 For each automation with `last_executed_at` on or after the month's first day, call `scenarios` → `performance` with `id`, `since`, `until`. The response:
 
 - `executions`: run counts for the window by status, with `total` and `failure_rate`.
-- `steps`: one entry per step in flow order, each with `position`, `action_type`, `reached` (runs that got to the step), how they ended there (`completed`, `failed`, `pending`, `interrupted`, `cancelled`, `skipped`), `metrics` (`sent`, `read`, `clicked`, `replied`, `converted`) and `top_reason_codes`.
+- `steps`: one entry per step, in step-id order, not flow order (`position` is the place inside a branch, usually 0). Rebuild the order from `scenarios` → `get` (`parent_id`, `parent_branch`) before naming a drop-off. Each step has `position`, `action_type`, `reached` (runs that got to the step), how they ended there (`completed`, `failed`, `pending`, `interrupted`, `cancelled`, `skipped`), `metrics` (`sent`, `read`, `clicked`, `replied`, `converted`) and `top_reason_codes`.
 
 | Report line | From | Label |
 | --- | --- | --- |
 | Runs per automation | `performance.executions.total` | "The comment flow on your launch post ran 820 times in October" |
 | Messages read | first message step: `metrics.read` against `metrics.sent` | "610 of 800 people opened the first message" |
 | Link clicks per automation | conversion-link step: `metrics.clicked` | "190 people tapped the link to your booking page" |
-| Where people stop | the step where `reached` drops most against the step before | A line in "what we are testing next" |
+| Where people stop | the step where `reached` drops most against its parent step (order from `scenarios` → `get`) | A line in "what we are testing next" |
 
 Campaigns: `campaigns` → `list` gives `title`, `status`, `sent_at`, `full_url` and `metrics` (`contacts`, `sent`, `opened`, `converted`, `failed`, `running`). A campaign is a one-off send, so its metrics belong to the month it was sent, unless it was still running at month end. `campaigns` → `performance` with `id`, `since`, `until` gives the step funnel.
 
@@ -57,13 +57,15 @@ Call `get_contact_filter_types` once per run and build filters from its answer. 
 
 **Counts stop at 10,000.** Past that, `pagination.total_count` reads 10,000 and `pagination.total_count_capped` is `true`. The figure is then a floor: write "more than 10,000", do not compare or subtract it, and take an exact number from the app if the client needs one.
 
+**Your own tests count too.** People on the agency's or the client's team who tested a flow from their own Instagram are in every count. When a small figure could be mostly tests (one link click, from a teammate), ask the agency before it goes in the report.
+
 | Report line | Filter | What it counts | Label |
 | --- | --- | --- | --- |
-| New contacts | `first_interaction`, month range | Contacts whose very first message, comment or mention with the account falls in the month | "New people who reached out" |
+| New contacts | `first_interaction`, month range | Contacts whose very first message, comment or mention with the account falls in the month. Cross-check with `contact_created_at` for the same range: if the two disagree a lot (on one account a month gave 0 against 24 created), report contacts created and tell the agency. | "New people who reached out" |
 | Engaged contacts | `any_engagement`, month range | Contacts with any message activity in the month | "People in a conversation with you" |
 | People who went through an automation | `scenario`, month range (add `scenario_id` for one automation) | Contacts who went through any scenario in the month | "People your automations talked to" |
 | People who received a campaign | `campaign`, month range (add `filtered_campaign_id` for one) | Contacts who received a campaign in the month | "People who received a broadcast" |
-| Link clickers | `clicked_conversion_link`, month range (add `conversion_link_id` per destination) | Contacts who clicked a tracked link in the month. A person who clicked twice counts once. | "People who clicked through to your shop" |
+| Link clickers | `clicked_conversion_link`, month range, per `conversion_link_id` (the overall count without an id can be refused; then use the link steps' `clicked` in `performance` for the month) | Contacts who clicked a tracked link in the month. A person who clicked twice counts once. | "People who clicked through to your shop" |
 | Survey answers | `survey`, month range, `options.survey_completion_status: "received_and_completed"` | Contacts who completed a survey | "People who answered your quiz" |
 | Payments | `payment`, month range, `options.payment_status: "paid"` | Payments made through Inrō's Stripe step | Only if the client takes payments in DMs |
 | Bookings | `appointment`, month range | Appointments created through Inrō's Calendly step | Only if the client books through the Calendly step |
@@ -74,18 +76,18 @@ Call `get_contact_filter_types` once per run and build filters from its answer. 
 
 `conversion_links` → `list` gives each link's `title` and destination `url`, so a click count gets a plain-language name.
 
-Activated contacts, the billing unit, are counted once per contact per billing period, when a scenario, campaign or the AI agent first messages them. `executions` → `health` returns `account.contact_activations_used` and `account.contact_activations_limit` for the **current billing period**, which starts on the billing date, not the 1st. For a calendar month, use the client's Dashboard (**Activated contacts**, with the month as the date range). The partner dashboard's Billing page shows usage by account for the billing period. If you report it, say where it came from and which period it covers.
+Activated contacts, the billing unit, are counted once per contact per billing period, when a scenario, campaign or the AI agent first messages them. `executions` → `health` returns `account.contact_activations_used` and `account.contact_activations_limit` for the **current billing period**, which starts on the billing date, not the 1st. On Pro the limit is the top of the current price bracket (500, then 1,000 and so on), not a cap: never write it as one. For a calendar month, use the client's Dashboard (**Activated contacts**, with the month as the date range). The partner dashboard's Billing page shows usage by account for the billing period. If you report it, say where it came from and which period it covers.
 
 ## Posts and stories
 
-`medias` → `list`, `status: "published"`, `per_page` up to 100, newest first. Stop paging once `posted_at` is before the month.
+`medias` → `list`, `status: "published"`, newest first. Stop paging once `posted_at` is before the month, and skip entries with no `posted_at`, which can come first. The response is heavy (about 270,000 characters per 100 posts), so page at 20 to 30.
 
 - `insights` is a hash keyed by metric name (reach, views, likes, saved, shares and others Instagram returns). It is present only when `insights_status` is `fresh`.
 - `refreshing`: a refresh is running. Read again a minute later. Older posts start refreshing when they are read, so expect this on the first pass.
 - `unavailable`: Instagram does not report on that post for this account. Leave it out of the totals and say "insights were not available for 2 of 14 posts".
 - Report totals and averages, not a row per post. Summed reach counts the same person once per post, so call it "combined reach", never "people reached".
 
-`stories` → `list` returns stories with an `insights` hash that Instagram fills by webhook. It is often empty. If so, tell the agency and let them check the story insights in the app. Story-reply automations report their own runs in `performance` either way.
+`stories` → `list` returns stories with an `insights` hash that Instagram fills by webhook. It is often empty. If so, tell the agency and let them check the story insights in the app. The list has no date filter and is not in date order: page it fully and filter by `posted_at`, or leave stories out and say so. Story-reply automations report their own runs in `performance` either way.
 
 ## Things to leave out
 

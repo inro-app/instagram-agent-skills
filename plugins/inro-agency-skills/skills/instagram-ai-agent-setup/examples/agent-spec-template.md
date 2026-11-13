@@ -18,7 +18,7 @@ Fill this in, show it to the user, and get an OK before any write. Put the chara
 
 ## 2. Voice and personality
 
-**About** (__/500)
+**Profile** (connector field `about`, __/500)
 
 > 
 
@@ -115,13 +115,14 @@ Built-in fields the agent may read: email / phone / none
 
 | Order | Call | What changes |
 |---|---|---|
-| 1 | `agent_manage` `update` | About, Goal, full rules list, examples, length, auto-like |
+| 1 | `agent_manage` `update` | Profile, Goal, full rules list, examples, length, auto-like |
 | 2 | `agent_manage` `create_item` (each) | New knowledge items |
 | 3 | `agent_manage` `create_contact_property` | Detected properties |
 | 4 | `agent_manage` `create_action` (each) | Intent actions |
 | 5 | `agent_manage` `update` | Knowledge access, cannot-reply scenario, human intervention, folder limits |
 | 6 | App, by the user | File uploads, model and reasoning, property descriptions check |
-| 7 | `agent_manage` `update` | Activation mode, only after the test pass and the user's go |
+| 7 | `scenarios_manage` `update` | Switch on the escalation scenario and every scenario an intent action runs, after the test pass and the user's go |
+| 8 | `agent_manage` `update` | Activation mode, with the same go |
 
 ## 9. Test results
 

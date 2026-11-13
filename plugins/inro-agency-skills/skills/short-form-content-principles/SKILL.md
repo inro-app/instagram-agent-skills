@@ -12,14 +12,14 @@ What goes on in a viewer's head while a reel plays, and how to write for it when
 
 Nothing needs to be connected. This skill thinks and writes.
 
-To put the result live: `client-post-scheduler` publishes or schedules the reel and can attach a simple comment-to-DM automation; `dm-flow-builder` builds a longer DM flow. Both need the Inrō connector (`https://api.inro.social/mcp`, one client on Pro or Trial) or the Inrō partner connector (`https://api.inro.social/partner/mcp`, partner token, client named on every call).
+To put the result live: `client-post-scheduler` publishes or schedules the reel and can attach a simple comment-to-DM automation; `dm-flow-builder` builds a longer DM flow. Both need the Inrō connector (`https://api.inro.social/mcp`, one client on Pro (monthly or annual), a free trial, or a lifetime plan (free accounts are refused)) or the Inrō partner connector (`https://api.inro.social/partner/mcp`, partner token, client named on every call).
 
 ## How to work
 
 - **Think about this reel, for this viewer.** These notes are things to reason with, not a fill-in template. A script that could be reused for a competitor by changing the logo is a sign you wrote from a pattern. Go back to the viewer.
 - **The client sees the script, not the theory.** Don't name techniques in the deliverable or annotate lines with them.
 - **Start from the client's brand-voice file** if the agency has one (the template ships with `client-post-scheduler`). Without it, ask four things before writing: who watches, what the client sells, the one thing this reel should get the viewer to do, and what the DM gives away.
-- **Hand over scripts as beats:** the spoken line, the on-screen text, what we see. Then the caption, the comment keyword and what the DM sends. `examples/reel-script-rewrite.md` shows a full before and after.
+- **Hand over scripts as beats:** the spoken line, the on-screen text, what we see, and a rough length in seconds so the editor has a target. Then the caption, the comment keyword and what the DM sends. `examples/reel-script-rewrite.md` shows a full before and after.
 
 ## Before writing: the viewer and the idea
 
@@ -96,7 +96,7 @@ Most client reels should end in a conversation, not a like. "Comment a keyword t
 
 - **One keyword per reel.** Short, easy to spell, tied to the payoff: MENU, PLAN, PRICES, QUOTE. Inrō's keyword matching ignores case and accents, so "menu" and "Menú" both count.
 - **Say exactly what they get and where it arrives:** "Comment PLAN and I'll send you the four-week plan in your DMs."
-- **Ask after the viewer has felt the value,** not in the opening line. Say it, show it on screen, and repeat it near the top of the caption.
+- **Ask after the viewer has felt the value,** not in the opening line. Say it, show it on screen, and repeat it in the first line of the caption, before the "more" cut.
 - **Promise what the DM really does.** If the DM first asks for a tap, a follow or an email, don't say "instantly".
 - **Make it an offer, not a reach trick.** Instagram has said that using comments and DMs to talk to people and generate leads isn't engagement bait; asking for comments only to inflate numbers is.
 - **Script and automation must match:** same keyword, same offer, same link, and the automation ready before the reel goes live. Hand the keyword and link to `client-post-scheduler` (comment, then a link card) or `dm-flow-builder` (email capture, booking, a hand-over to the AI agent).

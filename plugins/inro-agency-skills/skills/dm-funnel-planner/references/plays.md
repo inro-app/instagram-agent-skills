@@ -1,6 +1,6 @@
 # Plays: what each needs, how to size it, what to start from
 
-Check the "Only if" column against the account. If it is not true, the play is out of the quick wins, whatever the client's hopes. Template names are the in-app gallery names; links and setup notes are in `templates.md`. Confirm with `search_templates` before naming one, because the gallery changes.
+Check the "Only if" column against the account. If it is not true, the play is out of the quick wins, whatever the client's hopes. Template names are the in-app gallery names; links and setup notes are in `templates.md`. Check with `search_templates` before naming one, because the gallery changes. If search does not return a template, open its share page before you drop it: some valid templates are missing from search.
 
 ## Fix or restore (rank 1)
 
@@ -21,7 +21,7 @@ Check the "Only if" column against the account. If it is not true, the play is o
 | Story replies to a link | People reply to stories (count repliers, not stories) | People who replied to a story in the window | Template: Story replies to link clicks |
 | DM keyword answers | The same question arrives by DM again and again | People whose DMs contain that question in the window | A keyword DM flow (custom), or template: Qualify and book DM leads (AI) for booking-led clients |
 | AI answers in DMs | Repeated questions in DMs or comments, and a website, price list or FAQ to train on | People who DM'd in the window, and the share asking the top questions | Template: Handle DMs with AI. Setup belongs to `instagram-ai-agent-setup`. Pro and AI credits |
-| Ice breakers | People start new conversations with the account at all | `first_interaction` in the window | Up to 4 ice breakers, each with a scenario behind it |
+| Ice breakers | People start new conversations with the account, and the same openers repeat in a sample | `first_interaction` in the window | Up to 4 ice breakers, each with a scenario behind it |
 | Live comment links | The client goes live and sells or teaches on lives | Ask the client how often, and how many comment | Template: Send product links during lives. Pro |
 | Ad replies | `referral_ad` contacts above zero | People who arrived from ads in the window | Template: Book calls from your ads (pick the ad in the trigger) |
 | QR or link in the real world | The client has a shop, venue, packaging or events | Ask the client where the code would go | Template: Welcome customers from a QR code |

@@ -44,7 +44,7 @@ After fixing, rerun the failed cases and cases 1, 2 and 6, since fixes in one pl
 | Action fires on the wrong message | Narrow that action's intent wording |
 | Action never fires | Rephrase the intent the way a customer writes |
 
-In the app, **Improve reply** (on agent messages in **Message history**, the inbox, and automation run history) turns a written correction into suggested edits to About, Goal, rules and examples. Review each before and after, edit if needed, and apply. It does not edit knowledge items; fix those yourself.
+In the app, **Improve reply** (on agent messages in **Message history**, the inbox, and automation run history) turns a written correction into suggested edits to Profile (connector field `about`), Goal, rules and examples. Review each before and after, edit if needed, and apply. It does not edit knowledge items; fix those yourself.
 
 ## Agent not replying
 
@@ -59,7 +59,7 @@ Work through in order. Most cases are the first two.
 7. **The connection.** `get_organization_info` shows `login_error_data`. A broken Instagram connection stops all sending.
 8. **The account's own OpenAI key.** If the account uses its own key and that key is out of credit or rate limited, replies stop until it is topped up on the OpenAI side.
 
-An empty knowledge base does not stop replies: the agent still answers from its About, Goal and Instructions.
+An empty knowledge base does not stop replies: the agent still answers from its Profile, Goal and Instructions.
 
 ## First week after go-live
 

@@ -8,7 +8,7 @@ license: MIT
 
 Decide what DM automation to build for one client, and in what order, from the traffic the account already gets. The result is a one or two page plan the agency can put in front of the client. Building it is a separate step (`dm-flow-builder`).
 
-**Requirements.** The Inrō connector (`https://api.inro.social/mcp`, sign in with OAuth), connected to the client's account. The account must be on Pro or Trial, and one connection reaches one account. If you manage many clients, use the Inrō partner connector instead (`https://api.inro.social/partner/mcp`, your partner token in an `Authorization: Bearer` header). On the partner connector every request names the client by Instagram username or account id, and each client still needs Pro or Trial. Without a connector you can still draft a plan from what the client tells you and from their public profile, but mark every number as unverified and keep the plan provisional.
+**Requirements.** The Inrō connector (`https://api.inro.social/mcp`, sign in with OAuth), connected to the client's account. The account must be on Pro (monthly or annual), a free trial, or a lifetime plan. Free accounts, and accounts whose plan lapsed after a failed payment, are refused. One connection reaches one account. If you manage many clients, use the Inrō partner connector instead (`https://api.inro.social/partner/mcp`, your partner token in an `Authorization: Bearer` header). On the partner connector every request names the client by Instagram username or account id, and each client still needs one of those plans. Without a connector you can still draft a plan from what the client tells you and from their public profile, but mark every number as unverified and keep the plan provisional.
 
 ## Ground rules
 
@@ -23,7 +23,7 @@ Decide what DM automation to build for one client, and in what order, from the t
 Call `get_organization_info` (on the partner connector, pass the client's account id from `list_organizations`). Say back to the person:
 
 - the Instagram username and account name,
-- the plan (`subscription_tier`): Pro or Trial is needed for the connector to work at all,
+- the plan (`subscription_tier`), as a hint only: it can lag the real plan, and an account the connector does not serve is refused on every call with a message that says so,
 - whether Instagram is connected (`login_error_data.login_error`). If it is broken, every automation is stopped and nothing you plan will run until the client reconnects. That becomes the first item of the plan.
 - whether opt-out is on (`optout_options.active`). If it is off, note it for the foundations.
 
@@ -46,13 +46,13 @@ This is the core of the plan. Read the last 30 days by default, and the last 90 
 
 | What you need | Where it comes from |
 |---|---|
-| Posts and reels, and how many comments each gets | `medias` list (published), each post's `insights.comments` and `like_count`, and whether it already has a `comment_to_dm` automation |
-| How many people commented | `contacts` filter, `comment` in the window |
+| Posts and reels, and how many comments each gets | `medias` list (published), each post's `insights.comments` and `insights.likes` (not `like_count`, which is often 0), and whether it already has a `comment_to_dm` automation |
+| How many people commented | `contacts` filter, `comment` in the window (per post with `media_id` if the account-wide count is refused) |
 | How many people replied to stories | `contacts` filter, `story_reply` in the window |
 | How many people sent a DM, and what they ask | `contacts` filter, `message` in the window; `message` with a `value` such as "price" to count a repeated question; `contacts` get or `list_messages` on a small sample to read the questions themselves |
 | Story mentions, post mentions, ad arrivals | `contacts` filter, `story_mention`, `media_mention`, `referral_ad` |
 | The list | `contacts` filter on `email` or `phone` present, `folder`, `is_follower` |
-| What is already built | `scenarios` list, then `get` and `performance` on each active one |
+| What is already built | `scenarios` list, then `get` and `performance` on each active one that ran in the window (and the busiest inactive ones) |
 | What is broken | `executions` health for the window |
 | Entry points | `icebreakers` list, `persistent_menu` get, `campaigns` list, `conversion_links` list |
 | The AI agent | `agent` get, only to see whether it is on and what it covers |
@@ -99,7 +99,7 @@ For every quick win, and briefly for each fuller-funnel row, write:
 - **What the DM sends or asks.** The first message, the step that needs a tap or reply, and what comes after.
 - **Where it leads.** The link, booking, file, folder, or a person.
 - **How to measure it.** Runs, link clicks, emails collected, folder size, bookings, read on the scenario's results or with a contacts filter. Name the number you will report, and when.
-- **Template.** The closest template from `references/templates.md`, or "custom build" if none fits. Check the live gallery with `search_templates` (type `Scenario` or `Campaign`) before naming one; the gallery changes.
+- **Template.** The closest template from `references/templates.md`, or "custom build" if none fits. Check the live gallery with `search_templates` (type `Scenario` or `Campaign`) before naming one; the gallery changes. A template that search does not return can still be valid: check its share page before you drop it (`references/templates.md`).
 
 Design defaults that hold on Instagram:
 

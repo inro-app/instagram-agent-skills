@@ -43,9 +43,9 @@ No auth header is needed for the PUT. If you can't run it, give the agency the `
 
 `media_type` values: `image`, `audio`, `video`, `application`, `text`. `purpose: publishing` tells Inrō the file is for a post; the file is stored as uploaded either way.
 
-**Size limits:** images, audio and documents up to 25 MB, video up to 250 MB. Larger files are refused.
+**Size limits:** images, audio and documents up to 25 MB, text files up to 5 MB, video up to 250 MB. Larger files are refused. A media file can't be deleted through the connector, so upload only what was approved, once.
 
-**File types Inrō accepts:** JPEG, PNG, GIF, WebP and AVIF images; MP4, MOV and WebM video. Inrō converts them to what Instagram needs.
+**File types Inrō accepts:** JPEG, PNG, GIF, WebP and AVIF images; MP4, MOV and WebM video. Posts, reels and stories are published from the file exactly as uploaded (only the copy sent in DMs is converted), so use JPEG for images and MP4 or MOV for video: Instagram's publishing API takes only JPEG images.
 
 ## 3. Create a post (`medias_manage`)
 
@@ -159,9 +159,9 @@ A published post only accepts an `update` whose fields are `comment_to_dm` and/o
 
 ## 8. Instagram's own rules
 
-- **Hashtags:** up to 5 per post or reel. Instagram moved to this limit from December 2025, rolled out gradually.
+- **Hashtags:** up to 5 per post or reel. Instagram moved to this limit from December 2025, rolled out gradually (Social Media Today, 18 Dec 2025: https://www.socialmediatoday.com/news/instagram-implements-new-limits-on-hashtag-use/808309/). Inrō doesn't count hashtags for you.
 - **Feed image shape:** between 4:5 portrait and 1.91:1 landscape. Reels and stories are vertical, 9:16.
-- **Carousel:** 2 to 10 images or videos.
+- **Carousel:** 2 to 10 images or videos in Inrō (the composer and the connector stop at 10, although Instagram's API now allows up to 20).
 - **Labels set at publish time only:** AI label, paid partnership, trial reel. Instagram gives no way to add them to a live post.
 - **Publishing volume:** Instagram caps how many posts one account can publish through the API in 24 hours. A normal client calendar won't reach it.
 

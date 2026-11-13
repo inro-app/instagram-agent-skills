@@ -6,15 +6,18 @@ Before Step 2, save a copy of whatever you are about to change on each client (t
 
 ## Automation from a gallery template
 
-**Find the template.** `search_templates` with `type: "Scenario"` and a plain-words `query` ("collect emails from comments"). On the partner connector it also needs `organization`: use any client in scope, the gallery is the same for all. Show the user the matches and agree on one template id.
+**Find the template.** `search_templates` with `type: "Scenario"` and a plain-words `query` ("collect emails from comments"). On the partner connector it also needs `organization`: use any client in scope, the gallery is the same for all. Show the user the matches and agree on one template id. Search returns a handful of close matches and misses some valid templates. If the user names one it does not return, open its share page (`https://app.inro.social/public/scenarios/<id>`): if the page shows the flow, the id copies normally. The template's "What to set up" section in the search result lists the values to fill per client.
 
 **Dry run per client.**
 - `scenarios` `list` with `search` set to the template title. A match by the duplicate rule means **Duplicate**.
-- Look at the client's active automations whose triggers could overlap (same keyword, same ice breaker, same post). Open them with `scenarios` `get`. Overlap means **Conflict**.
+- Look at the client's active automations whose triggers could overlap (same keyword, same ice breaker, same post). Open them with `scenarios` `get`. Overlap means **Conflict**. `scenarios` `list` does not show triggers, so this is one `get` per active automation. Start with the ones whose titles or types suggest the same trigger (for a DM template, custom automations; for a comment template, `comment_to_dm`), and say in the plan how many you opened.
+- The template itself cannot be opened with `scenarios` `get` (it is not in the client's account), so judge its triggers from its description and share page.
 
-**Write.** `scenarios_manage` `create` with `template_id` and the agreed `title`. A copy made from a template starts switched off. It arrives outside any folder.
+**Write.** `scenarios_manage` `create` with `template_id` and the agreed `title`. A copy made from a template starts switched off and outside any automation folder. It can also create things in the client account: the contact folders its steps use (reused by name, created when missing), and its own copies of any links, media files, surveys and automations its steps start. List them in the plan and in the rollback list; deleting the automation does not remove them. Before deleting such a folder later, check that no other automation uses it.
 
 **After the write.** Templates carry example links, names and wording. Open the copy with `scenarios` `get` and `show_scenario`, then replace every example value with the client's own (`scenarios_manage` `update`, see "Fix to an existing automation" for the rules). Nobody switches it on until those values are in.
+
+A copy can start with a warning of severity `issue` until those values are in (for example "Email address is empty" on an alert step). Put the expected warnings in the plan so they do not count as unexpected in Step 4.
 
 **Rollback.** `scenarios_manage` `update` with `active: false`. Deleting (`scenarios_manage` `delete`) is permanent and needs the user's explicit OK for that record.
 
@@ -47,6 +50,8 @@ Build and check it once, in your own agency account or in one client, then copy 
 
 **Find it on each client.** `scenarios` `list` with `search`. Titles can differ between clients, so confirm each match with the user. Then `scenarios` `get` and save the full definition: it is the rollback.
 
+If the user names a step that does not exist ("the opening message" in an automation that starts with an AI hand-over), show them the first steps and ask. In an AI step the words come from its task (`options.agent_task`), not from a fixed message.
+
 **Rules that bite.** ([Updating Scenario & Campaign Actions](https://help.inro.social/en/articles/15075798))
 - `actions` on update is the complete list. Any existing step you leave out is deleted. Send every step, with the `id` of each step you keep.
 - `triggers` on update: a list where no item has an `id` replaces every trigger. Replaced triggers get new ids and a webhook trigger loses its URL. Include the `id` of each trigger you keep.
@@ -55,7 +60,7 @@ Build and check it once, in your own agency account or in one client, then copy 
 
 **Write.** `scenarios_manage` `update` with `id` and the fields that change.
 
-**Read-back.** `scenarios` `get`, compare with the plan, check `warnings`.
+**Read-back.** `scenarios` `get`, compare with the plan, check `warnings`. `updated_at` does not change when only steps change, so compare the steps themselves.
 
 **Rollback.** `scenarios_manage` `update` with the saved definition.
 

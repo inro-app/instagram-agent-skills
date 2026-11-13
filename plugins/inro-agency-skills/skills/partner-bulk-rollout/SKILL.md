@@ -8,7 +8,7 @@ license: MIT
 
 One change, many client accounts, no surprises. There is no call that changes several accounts at once. You loop over the clients yourself, one at a time, and every call names the client it is for.
 
-**Requirements.** The Inrō partner connector: `https://api.inro.social/partner/mcp`, with your partner API token in an `Authorization: Bearer` header and the connector's Authentication set to "None". Every call names the client account by its account id or Instagram username. Each client account must be on Pro or Trial (accounts you created under your partner plan are covered by that plan). **Without it:** you can run the same steps with one Inrō connector per client (`https://api.inro.social/mcp`, OAuth, one account per connection, client on Pro or Trial). It is slower, and Step 0 becomes "confirm which account each connector is on with `get_organization_info`".
+**Requirements.** The Inrō partner connector: `https://api.inro.social/partner/mcp`, with your partner API token in an `Authorization: Bearer` header and the connector's Authentication set to "None". Every call names the client account by its account id or Instagram username. Each client account must be on Pro (monthly or annual), a free trial, or a lifetime plan; accounts you created under your partner plan are covered by it. Free accounts, and accounts whose plan lapsed after a failed payment, are refused. **Without it:** you can run the same steps with one Inrō connector per client (`https://api.inro.social/mcp`, OAuth, one account per connection, client on one of those plans). Your Claude app allows one connector per URL, so give each one a unique dummy query string, for example `https://api.inro.social/mcp?client=acme`. It is slower, and Step 0 becomes "confirm which account each connector is on with `get_organization_info`".
 
 Help center: [Partner API & MCP](https://help.inro.social/en/articles/17027623), [The Partner Dashboard](https://help.inro.social/en/articles/17027622).
 
@@ -21,7 +21,7 @@ Help center: [Partner API & MCP](https://help.inro.social/en/articles/17027623),
 
 ## Rules that never bend
 
-1. **Every call names the client** in the `organization` argument. Use the account id from `list_organizations`, not the username: a username can match more than one account, and the call is then refused. Never rely on a default or on "the client from the last call". There is no default.
+1. **Every call names the client** in the `organization` argument. Use the account id from `list_organizations`, not the username: a username can match more than one account (the call is then refused), and an account that has not connected Instagram yet has no username at all. Never rely on a default or on "the client from the last call". There is no default.
 2. **Read before you write.** Every client gets a dry run before anything changes.
 3. **The user approves the per-client plan**, and the approval names the clients ("all 8 in the table" or a list). An OK for three clients is not an OK for ten.
 4. **New automations are created switched off** (`active: false`). They go live only when the user says so, per client.
@@ -36,7 +36,7 @@ Help center: [Partner API & MCP](https://help.inro.social/en/articles/17027623),
 1. Call `list_organizations`. If that tool does not exist, you are on a single-account connector, not the partner one. Say so and stop, or switch to the per-client route above.
 2. Show the user a table: account id, username, name, `instagram_connected`, `subscription_tier`.
 3. Ask which clients are in scope: all of them, a list, or a filter ("the gyms", "everyone except X"). Resolve every name to an id from this table. Ask about any name that matches no row or more than one row.
-4. Put aside, and list separately, every account where `instagram_connected` is false (nothing can run there yet) and every account whose tier is not `pro` or `trial` (calls to it are refused).
+4. Put aside, and list separately, every account where `instagram_connected` is false (nothing can run there yet). Do not set an account aside for its `subscription_tier` alone: the tier can lag the real plan, and a new partner account can read `free` and work normally. An account whose calls are refused ("... is not on a Pro or Trial subscription, so it cannot be managed through the API") goes aside when the Step 2 reads show it.
 
 ## Step 1. Write the change down once
 
@@ -71,13 +71,13 @@ Before you build automation steps or triggers, call `get_action_types` and `get_
 
 For each client in scope, in order:
 
-1. Call `get_organization_info` with `organization: <id>`. Check the username is the one in your table, the tier is Pro or Trial, and the connection is healthy (`login_error_data`, `instagram_restrictions`). If anything does not match, stop and ask.
+1. Call `get_organization_info` with `organization: <id>`. Check the username is the one in your table and the connection is healthy (`login_error_data`, `instagram_restrictions`). If anything does not match, stop and ask. If the call is refused for the plan, the client is **Blocked**.
 2. Read what the change touches, as listed for its type in `references/change-types.md`.
 3. Put the client in one bucket:
    - **New:** nothing like it exists. Ready to create.
    - **Duplicate:** it is already there by the duplicate rule. Skip.
    - **Conflict:** something close but different exists. Examples: another active automation already triggers on the same keyword or ice breaker, the client already has 4 ice breakers, the menu already has 5 entries, a property with the same title has a different type.
-   - **Blocked:** not connected, not on Pro or Trial, or a per-client value is missing.
+   - **Blocked:** not connected, refused for its plan, or a per-client value is missing.
 4. Write down exactly what you would create or change, with the title it would carry and what it would replace.
 
 Write nothing in this step. Ten clients means ten sets of reads. That is the point.
@@ -97,7 +97,7 @@ For each approved client, in the order of the plan:
 
 1. Call `get_organization_info` with the id again. Same username as in the plan? Go on. If not, stop.
 2. Make the write with `organization: <id>`. For automations, set `active: false` and the agreed title.
-3. Read it back (`scenarios` get, `show_scenario`, `icebreakers` list, `persistent_menu` get, and so on) and check it matches the plan. For a new automation, check the `warnings` in the create response: a warning with severity `issue` means the steps will not run as written.
+3. Read it back (`scenarios` get, `show_scenario`, `icebreakers` list, `persistent_menu` get, and so on) and check it matches the plan. For a new automation, check the `warnings` in the create response: a warning with severity `issue` means the steps will not run as written. Warnings the plan listed as expected (for example "Email address is empty" on a template's alert step, until the client's address is in) are not a stop. Any other `issue` is.
 4. Log the row: client, what was done, the new record's id, and the read-back result.
 5. **If anything unexpected happens** (a refusal, a validation error, a read-back that differs from the plan), stop for this client. Do not retry with changed input. Record what was already written on this client. Ask the user: fix and retry this client, skip it, or stop the whole rollout. Continue with the next client only on their answer.
 
@@ -108,7 +108,7 @@ If a call fails with a timeout or a "too many requests" error, read first to see
 When the last client is done, or the user stops the rollout, show:
 
 - **Results table:** every client in scope with its outcome (done, skipped as duplicate, skipped by decision, blocked, stopped on error) and the new record ids.
-- **Rollback list:** for each record created or changed, how to undo it. Switch off a new automation. Delete an ice breaker by its payload. Put back the previous menu, opt-out keywords or automation steps from the values you saved in the dry run. A deleted property loses all its values, so deleting one is never automatic.
+- **Rollback list:** for each record created or changed, how to undo it. Switch off a new automation. Delete an ice breaker by its payload. Put back the previous menu, opt-out keywords or automation steps from the values you saved in the dry run. A deleted property loses all its values, so deleting one is never automatic. List anything a template copy created besides the automation (contact folders, links, files, surveys): deleting the automation does not remove them.
 - **What is still open:** clients blocked or stopped, conflicts left for later, anything that needs the app.
 
 Save both tables next to the plan. Formats are in `references/tables.md`.
