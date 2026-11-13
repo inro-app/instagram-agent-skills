@@ -68,7 +68,7 @@ A link's type cannot be changed after it is created. Make a new link for the oth
 1. `list_organizations`. Check the client is not already there (same name, or an earlier attempt that never connected). Reuse an unconnected one rather than creating a second.
 2. Agree the name with the user and get their OK (Rule 3).
 3. `create_organization` with `name` only. It also accepts `partner_link_code` (the code in a managed link's address, after `/p/`) to attribute the account to that link and copy its template, and `template_id` (an automation in one of your accounts) to copy it in. Both copies are switched on, so leave them out unless the user asked for them (Rule 2). A `template_id` that is not one of your accounts' automations is skipped without an error, and the connect page of this route does not tell the client about the template.
-4. The response has the account `id`, `instagram_connected: false` and an `instagram_connect_url`. Write down the id: the account has no username until Instagram connects, so the id is the only way to name it. Its `subscription_tier` can read `free` at first; that is a lag in the field, and the account works anyway. Send the URL to the client (Step 4).
+4. The response has the account `id`, `instagram_connected: false` and an `instagram_connect_url`. Write down the id: the account has no username until Instagram connects, so the id is the only way to name it. Its `subscription_tier` can read `free`; the account still works, reads and writes included. Send the URL to the client (Step 4).
 
 ## Step 4. The client connects Instagram
 
@@ -124,7 +124,7 @@ If a template was copied in and is on, show it with `show_scenario`, tell the us
 
 ## Cleaning up
 
-- **An account with no Instagram connected** can be deleted with `delete_organization` and the account id, after the user's OK. It works only while no Instagram is connected (never connected, or disconnected since), deletes everything in the account, and cannot be undone. The partner dashboard has no delete button for accounts.
+- **An account with no Instagram connected** can be deleted with `delete_organization` and the account id, after the user's OK. It works only on an account that never connected Instagram (`can_be_deleted: true` in `list_organizations`), deletes everything in the account, and cannot be undone. The partner dashboard has no delete button for accounts.
 - **A connected account** cannot be deleted through the partner connector. It is a live client account.
 - **Managed link visits** that never connected are removed automatically.
 

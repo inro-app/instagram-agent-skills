@@ -68,7 +68,7 @@ One list across all clients, ranked by urgency, not grouped by client. Within a 
 
 **Fix today** (the account, or part of it, is cut off):
 - Client on the roster but not reachable, or its calls refused.
-- Instagram disconnected, or an error flagged on the connection.
+- Instagram disconnected, or an error flagged on the connection. An account that never connected (`username: null`) is "not connected": a finding only if the client should be live.
 - Meta blocking all DMs or DMs with links on the account.
 - Activation limit reached: automations stop messaging new people.
 - An automation suspended by the platform.

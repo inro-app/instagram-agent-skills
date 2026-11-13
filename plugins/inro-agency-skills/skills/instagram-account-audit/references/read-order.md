@@ -15,7 +15,7 @@ Tool names, fields and values below were checked against the connector and the a
 - `can_publish`, `missing_publish_scopes`: only matters if the client publishes posts from Inrō.
 - `optout_options`: whether opt-out is on, its keywords, the menu entry and the confirmation message.
 
-**Partner connector:** `list_organizations` first. `connected: false` lists the client accounts whose Instagram connection is broken, which is a useful first look across a roster. Then `get_organization_info` with `organization`.
+**Partner connector:** `list_organizations` first. `connected: false` lists every client account without a working Instagram connection, both broken ones and ones that never connected (`username: null`), which is a useful first look across a roster. Then `get_organization_info` with `organization`.
 
 ## 2. Health
 

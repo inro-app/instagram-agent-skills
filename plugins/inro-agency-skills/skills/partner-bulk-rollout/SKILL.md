@@ -97,7 +97,7 @@ For each approved client, in the order of the plan:
 
 1. Call `get_organization_info` with the id again. Same username as in the plan? Go on. If not, stop.
 2. Make the write with `organization: <id>`. For automations, set `active: false` and the agreed title.
-3. Read it back (`scenarios` get, `show_scenario`, `icebreakers` list, `persistent_menu` get, and so on) and check it matches the plan. For a new automation, check the `warnings` in the create response: a warning with severity `issue` means the steps will not run as written. Warnings the plan listed as expected (for example "Email address is empty" on a template's alert step, until the client's address is in) are not a stop. Any other `issue` is.
+3. Read it back (`scenarios` get, `show_scenario`, `icebreakers` list, `persistent_menu` get, and so on) and check it matches the plan. For a new automation, check the `warnings` in the create response, on the trigger as well as on every step: a warning with severity `issue` means the steps will not run as written. Warnings the plan listed as expected (for example "Email address is empty" on a template's alert step, until the client's address is in) are not a stop. Any other `issue` is.
 4. Log the row: client, what was done, the new record's id, and the read-back result.
 5. **If anything unexpected happens** (a refusal, a validation error, a read-back that differs from the plan), stop for this client. Do not retry with changed input. Record what was already written on this client. Ask the user: fix and retry this client, skip it, or stop the whole rollout. Continue with the next client only on their answer.
 

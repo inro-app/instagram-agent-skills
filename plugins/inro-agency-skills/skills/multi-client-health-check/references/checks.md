@@ -22,7 +22,7 @@ The thresholds below are defaults. If the agency wants a different bar, write it
 
 | Dashboard status | From the connector |
 | --- | --- |
-| Disconnected | `executions` → `health` returns `account.instagram_connected: false`. Automations cannot run. |
+| Disconnected | `executions` → `health` returns `account.instagram_connected: false` on an account that has a username (it was live). Automations cannot run. An account that never connected (`username: null`) reads the same: report it as **Not connected**, a finding only if the roster says the client should be live. |
 | Error | `login_error_data.login_error` is `true` but `account.instagram_connected` is still `true`. |
 | Restricted | `instagram_restrictions` is not empty. |
 | Limited | Connected, but permissions are missing. The connector only shows the publishing ones (`missing_publish_scopes`); check the dashboard for others. |
@@ -80,7 +80,7 @@ The connector does not show the AI credit balance. Pro accounts are not metered.
 ## 7. Optional reads
 
 - **Scheduled posts** (clients whose posts you schedule): `medias` → `list`, `status: "scheduled"`, and the most recent published ones. A `publish_status` of `ERROR` or `EXPIRED` means a publish failed; `login_error_data` on that post holds Instagram's error.
-- **Ice breakers** (clients that use them): `icebreakers` → `list`. Each has `question` and `automations`. An empty `automations` array, or only inactive ones, means tapping that question starts nothing. This reads live from Instagram on every call.
+- **Ice breakers** (clients that use them): `icebreakers` → `list` (refused with "Instagram is not connected" on an account that never connected: skip it there). Each has `question` and `automations`. An empty `automations` array, or only inactive ones, means tapping that question starts nothing. This reads live from Instagram on every call.
 
 ## Conditions, by level
 
@@ -89,7 +89,7 @@ The connector does not show the AI credit balance. Pro accounts are not metered.
 | Check | Condition |
 | --- | --- |
 | Reach | Client on the roster not reachable, or its calls refused |
-| Connection | `account.instagram_connected: false`, or `login_error_data.login_error: true` |
+| Connection | `account.instagram_connected: false` on an account that has a username, or `login_error_data.login_error: true` (never connected, `username: null`, is Not connected, not a fault) |
 | Restriction | `instagram_restrictions` has `sending_blocked` or `links_blocked` |
 | Activation limit | `account.contact_activation_limit_reached: true` |
 | Automation | Any `suspended: true` |

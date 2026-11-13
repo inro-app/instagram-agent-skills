@@ -9,7 +9,7 @@ Before Step 2, save a copy of whatever you are about to change on each client (t
 **Find the template.** `search_templates` with `type: "Scenario"` and a plain-words `query` ("collect emails from comments"). On the partner connector it also needs `organization`: use any client in scope, the gallery is the same for all. Show the user the matches and agree on one template id. Search returns a handful of close matches and misses some valid templates. If the user names one it does not return, open its share page (`https://app.inro.social/public/scenarios/<id>`): if the page shows the flow, the id copies normally. The template's "What to set up" section in the search result lists the values to fill per client.
 
 **Dry run per client.**
-- `scenarios` `list` with `search` set to the template title. A match by the duplicate rule means **Duplicate**.
+- `scenarios` `list` with `search` set to the template title, then again with the title this rollout gives each copy (a copy renamed for the client doesn't match the template title, so a second run would otherwise add it twice). A match by the duplicate rule on either search means **Duplicate**.
 - Look at the client's active automations whose triggers could overlap (same keyword, same ice breaker, same post). Open them with `scenarios` `get`. Overlap means **Conflict**. `scenarios` `list` does not show triggers, so this is one `get` per active automation. Start with the ones whose titles or types suggest the same trigger (for a DM template, custom automations; for a comment template, `comment_to_dm`), and say in the plan how many you opened.
 - The template itself cannot be opened with `scenarios` `get` (it is not in the client's account), so judge its triggers from its description and share page.
 
@@ -42,7 +42,7 @@ Build and check it once, in your own agency account or in one client, then copy 
 
 **Write.** `scenarios_manage` `create` with `title`, `active: false`, `triggers` and `actions`, plus any scenario settings the source had and you agreed to copy (for example `scenario_type`, rate limit settings).
 
-**Read-back.** Check the `warnings` on every action in the create response. A severity of `issue` means the tree will run differently from how it reads: fix and update before you go on. Then `show_scenario` so the user can see the flow.
+**Read-back.** Check the `warnings` on the trigger and on every action in the create response (a template copy can carry its `issue` on the trigger, for example "No ad selected."). A severity of `issue` means the tree will run differently from how it reads: fix and update before you go on. Then `show_scenario` so the user can see the flow.
 
 **Rollback.** Switch off with `scenarios_manage` `update` and `active: false`. Delete only with explicit approval.
 
