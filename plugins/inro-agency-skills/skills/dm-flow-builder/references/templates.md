@@ -16,7 +16,7 @@ Plan notes: "Free" runs on any plan, "Pro" needs a paid plan (Pro, a trial or a 
 | Grow followers with a freebie | Comments with your keyword | Followers get the link; others are asked to follow first | Free | https://app.inro.social/public/scenarios/6028 |
 | Book calls from comments | Comments with your keyword | One question; ready people get the booking link and you get an alert, the rest a free resource | Free | https://app.inro.social/public/scenarios/6025 |
 | Build a launch waitlist | Comments with your keyword | Adds them to a waitlist folder and asks for an email | Free | https://app.inro.social/public/scenarios/6081 |
-| Run a tag-a-friend giveaway | Comments that tag someone | Asks for a follow, then an email, then confirms the entry | Free | https://app.inro.social/public/scenarios/6018 |
+| Run a tag-a-friend giveaway | Comments that tag someone | Asks for a follow, then an email, then confirms the entry | Free | https://app.inro.social/public/scenarios/41079 |
 | Story replies to link clicks | Story replies with your keyword | Sends your link, one reminder if they do not open it | Free | https://app.inro.social/public/scenarios/6023 |
 | Send product links during lives | Live comments with your keyword | DMs a button, then the product link | Pro | https://app.inro.social/public/scenarios/4393 |
 | Book calls from your ads | Replies to a click-to-message ad | One question and an email, then the booking link or a lighter resource | Free | https://app.inro.social/public/scenarios/6222 |
