@@ -4,7 +4,7 @@ Claude skills for agencies that run Instagram DM automation for their clients wi
 
 Each skill is a set of instructions Claude follows step by step, with safety checks built in: it confirms which account it's working on, reads before it changes anything, shows you the plan, and waits for your OK before it writes.
 
-Part of the Inrō Agency Automation Kit (templates, a free audit and the partner program).
+Part of the [Inrō Agency Automation Kit](https://inro.notion.site/Inr-Agency-Automation-Kit-416235faa3cc8180bfb4f475ac04ba71?utm_source=agency-kit&utm_medium=referral&utm_campaign=agency-skills-repo) (templates, a free audit and the partner program).
 
 ## The skills
 
